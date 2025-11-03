@@ -8,8 +8,13 @@ import authRoutes from "../api/auth";
 const app = express();
 const httpServer = createServer(app);
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.CLIENT_URL || "http://localhost:3000"
+];
+
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());
@@ -22,7 +27,7 @@ app.get("/health", (req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
