@@ -15,38 +15,38 @@ export default function Home() {
   const authenticated = mounted && isAuthenticated();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold text-gray-900 mb-4">
+          <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4">
             🎮 Tock Game
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Jouez au Tock en ligne avec vos amis ! Jeu de plateau 2v2 avec animations temps réel et règles complètes.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
             <div className="text-5xl mb-4">👥</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Multijoueur</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Multijoueur</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Jouez à 4 en 2v2 avec vos amis en temps réel
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
             <div className="text-5xl mb-4">✨</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Animations</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Animations</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Déplacements pas à pas avec compteur visuel
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
             <div className="text-5xl mb-4">🏆</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Classement</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Classement</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Historique des parties et tableau des scores
             </p>
           </div>
@@ -91,16 +91,16 @@ export default function Home() {
             </div>
           )}
 
-          <p className="text-sm text-gray-500 mt-8">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-8">
             {authenticated ? "Vous êtes connecté !" : "Inscrivez-vous pour sauvegarder vos parties et voir votre historique"}
           </p>
         </div>
 
-        <div className="mt-16 bg-white rounded-xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+        <div className="mt-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
             🎴 Règles du jeu
           </h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
+          <div className="grid md:grid-cols-2 gap-6 text-gray-700 dark:text-gray-300">
             <div>
               <h4 className="font-semibold mb-2">Objectif</h4>
               <p className="text-sm">
@@ -128,7 +128,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>Next.js 15 · React 19 · TypeScript · Socket.IO · Prisma · PostgreSQL</p>
           <p className="mt-2">
             Développé par <span className="font-semibold">Jérémy Poulain</span>

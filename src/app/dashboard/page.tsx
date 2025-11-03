@@ -29,19 +29,19 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Bonjour, {user?.firstName} ! 👋
           </h1>
-          <p className="text-gray-600">Bienvenue sur votre tableau de bord</p>
+          <p className="text-gray-600 dark:text-gray-300">Bienvenue sur votre tableau de bord</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Informations du compte</h2>
-            <div className="space-y-3 text-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Informations du compte</h2>
+            <div className="space-y-3 text-gray-700 dark:text-gray-300">
               <div>
                 <span className="font-semibold">Nom complet :</span> {user?.firstName} {user?.lastName}
               </div>
@@ -54,9 +54,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Statistiques</h2>
-            <div className="space-y-3 text-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Statistiques</h2>
+            <div className="space-y-3 text-gray-700 dark:text-gray-300">
               <div>
                 <span className="font-semibold">Parties jouées :</span> 0
               </div>
@@ -67,14 +67,14 @@ export default function Dashboard() {
                 <span className="font-semibold">Taux de victoire :</span> 0%
               </div>
             </div>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
               Les statistiques seront bientôt disponibles !
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Actions rapides</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Actions rapides</h2>
           <div className="flex gap-4 flex-wrap">
             <Link
               href="/lobby/new"
@@ -91,9 +91,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Historique des parties</h2>
-          <div className="text-center text-gray-500 py-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Historique des parties</h2>
+          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
             <div className="text-5xl mb-4">🎲</div>
             <p>Aucune partie jouée pour le moment</p>
             <p className="text-sm mt-2">Créez une partie pour commencer !</p>
