@@ -13,8 +13,10 @@ const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
 const allowedOrigins = [
     "http://localhost:3000",
-    process.env.CLIENT_URL || "http://localhost:3000"
-];
+    "https://tock-game.vercel.app",
+    process.env.CLIENT_URL || ""
+].filter(origin => origin !== "");
+console.log("🌐 CORS autorisé pour:", allowedOrigins);
 app.use((0, cors_1.default)({
     origin: allowedOrigins,
     credentials: true,

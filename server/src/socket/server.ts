@@ -8,10 +8,13 @@ import authRoutes from "../api/auth";
 const app = express();
 const httpServer = createServer(app);
 
-const allowedOrigins = [
+const allowedOrigins: string[] = [
   "http://localhost:3000",
-  process.env.CLIENT_URL || "http://localhost:3000"
-];
+  "https://tock-game.vercel.app",
+  process.env.CLIENT_URL || ""
+].filter(origin => origin !== "");
+
+console.log("🌐 CORS autorisé pour:", allowedOrigins);
 
 app.use(cors({
   origin: allowedOrigins,
