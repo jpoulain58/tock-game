@@ -1,8 +1,25 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
+import express from "express";
+import cors from "cors";
 import { TockGame } from "../game/TockGame";
+import authRoutes from "../api/auth";
 
-const httpServer = createServer();
+const app = express();
+const httpServer = createServer(app);
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
+app.use(express.json());
+
+app.use("/api/auth", authRoutes);
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",

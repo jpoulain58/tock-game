@@ -50,8 +50,9 @@ model GamePlayer {
   id         String   @id @default(uuid())
   game       Game     @relation(fields: [gameId], references: [id])
   gameId     String
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     String?
+  playerName String
   playerSlot Int
   team       Int
   joinedAt   DateTime @default(now())
@@ -61,26 +62,30 @@ model GamePlayer {
 }
 
 model Pawn {
-  id           String   @id @default(uuid())
-  game         Game     @relation(fields: [gameId], references: [id])
+  id           String      @id @default(uuid())
+  game         Game        @relation(fields: [gameId], references: [id])
   gameId       String
+  gamePlayer   GamePlayer? @relation(fields: [gamePlayerId], references: [id])
+  gamePlayerId String?
   playerSlot   Int
   pawnIndex    Int
   locationType String
   locationIdx  Int?
-  lastUpdated  DateTime @default(now())
+  lastUpdated  DateTime    @default(now())
 }
 
 model Move {
-  id             String   @id @default(uuid())
-  game           Game     @relation(fields: [gameId], references: [id])
-  gameId         String
-  playerSlot     Int
+  id              String      @id @default(uuid())
+  game            Game        @relation(fields: [gameId], references: [id])
+  gameId          String
+  gamePlayer      GamePlayer? @relation(fields: [gamePlayerId], references: [id])
+  gamePlayerId    String?
+  playerSlot      Int
   clientRequestId String
-  card           String
-  actionJson     Json
-  eventsJson     Json
-  createdAt      DateTime @default(now())
+  card            String
+  actionJson      Json
+  eventsJson      Json
+  createdAt       DateTime    @default(now())
 }
 
 model Score {

@@ -6,15 +6,30 @@
   "scripts": {
     "dev": "tsx watch src/socket/server.ts",
     "build": "tsc",
-    "start": "node dist/socket/server.js"
+    "start": "node dist/socket/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mjml": "^4.16.1",
+    "nodemailer": "^7.0.10",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.0.0",
+    "@types/nodemailer": "^7.0.3",
+    "prisma": "^6.18.0",
     "tsx": "^4.19.2",
     "typescript": "^5.0.0"
   }
 }
-
