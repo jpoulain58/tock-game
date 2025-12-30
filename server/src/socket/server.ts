@@ -20,25 +20,39 @@ const allowedOrigins: string[] = [
 
 app.use(cors({
   origin: (origin, callback) => {
+    console.log('🔍 CORS check for origin:', origin);
+
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
 
     // Allow localhost in development
-    if (origin.includes('localhost')) return callback(null, true);
+    if (origin.includes('localhost')) {
+      console.log('✅ Allowing localhost origin:', origin);
+      return callback(null, true);
+    }
 
     // Allow main production domain
-    if (origin === 'https://tock-game.vercel.app') return callback(null, true);
+    if (origin === 'https://tock-game.vercel.app') {
+      console.log('✅ Allowing main production domain:', origin);
+      return callback(null, true);
+    }
 
-    // Allow Vercel preview deployments for this project
-    if (origin && origin.includes('vercel.app') && origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
+    // Allow ANY Vercel domain (for previews and production)
+    if (origin && origin.includes('vercel.app')) {
+      console.log('✅ Allowing Vercel domain:', origin);
       return callback(null, true);
     }
 
     // Check against allowed origins
     if (allowedOrigins.includes(origin)) {
+      console.log('✅ Allowing from allowed origins:', origin);
       return callback(null, true);
     }
 
+    console.log('❌ Blocking origin:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
