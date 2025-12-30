@@ -14,17 +14,9 @@ export const useThemeStore = create<ThemeState>()(
       toggleTheme: () =>
         set((state) => {
           const newTheme = state.theme === 'light' ? 'dark' : 'light';
-          if (typeof document !== 'undefined') {
-            document.documentElement.classList.toggle('dark', newTheme === 'dark');
-          }
           return { theme: newTheme };
         }),
-      setTheme: (theme) => {
-        if (typeof document !== 'undefined') {
-          document.documentElement.classList.toggle('dark', theme === 'dark');
-        }
-        set({ theme });
-      },
+      setTheme: (theme) => set({ theme }),
     }),
     {
       name: 'tock-theme-storage',
