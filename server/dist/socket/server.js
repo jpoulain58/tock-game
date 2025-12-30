@@ -6,23 +6,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_io_1 = require("socket.io");
 const http_1 = require("http");
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
 const auth_1 = __importDefault(require("../api/auth"));
 const events_1 = require("./events");
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
 app.set("trust proxy", 1);
-// Simple CORS configuration that works
-const corsOptions = {
-    origin: true, // Allow all origins (for debugging, we'll restrict after it works)
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    exposedHeaders: ['Set-Cookie'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-};
-app.use((0, cors_1.default)(corsOptions));
+// Manual CORS handling - more reliable than the cors package
+app.use((req, res, next) => {
+    const origin = req.headers.origin || '*';
+    // Set CORS headers manually
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+    console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        console.log('✅ Preflight request handled');
+        return res.sendStatus(204);
+    }
+    next();
+});
 app.use(express_1.default.json());
 app.use("/api/auth", auth_1.default);
 app.get("/health", (req, res) => {

@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 import express from "express";
-import cors from "cors";
 import authRoutes from "../api/auth";
 import { GamesRegistry } from "./types";
 import { registerSocketEvents } from "./events";
@@ -11,18 +10,28 @@ const httpServer = createServer(app);
 
 app.set("trust proxy", 1);
 
-// Simple CORS configuration that works
-const corsOptions = {
-  origin: true, // Allow all origins (for debugging, we'll restrict after it works)
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Set-Cookie'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-};
+// Manual CORS handling - more reliable than the cors package
+app.use((req, res, next) => {
+  const origin = req.headers.origin || '*';
+  
+  // Set CORS headers manually
+  res.header('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+  
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    console.log('✅ Preflight request handled');
+    return res.sendStatus(204);
+  }
+  
+  next();
+});
 
-app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
