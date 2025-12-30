@@ -231,6 +231,6 @@ MIT
 
 Développé par Jérémy Poulain dans le cadre d'un projet scolaire.
 
----
+----
 
 **Bon jeu ! 🎲**
