@@ -5,6 +5,8 @@ const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.EMAIL_PORT || '587'),
   secure: false,
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 5000,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -131,11 +133,16 @@ export async function sendPasswordResetEmail(email: string, username: string, to
 
   const { html } = mjml2html(mjmlTemplate);
 
+    try {
+      
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || '"Tock Game" <no-reply@tockgame.com>',
     to: email,
     subject: '🔐 Réinitialisation de mot de passe - Tock Game',
     html,
-  });
+  });  } catch (error) {
+          console.error('Erreur lors de l\'envoi de l\'email:', error);
+          // On ne lance pas d'erreur pour ne pas bloquer l'utilisateur
+        }
 }
 
