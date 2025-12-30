@@ -2,53 +2,21 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore } from '@/hooks/gameStore';
 import { defaultBoardMapping } from './boardMapping';
-import { computeAnchors } from './tockBoard';
 
 export type BoardProps = {
-  
   src?: string;
-  
   className?: string;
-  
-  showGrid?: boolean;
-  
-  children?: React.ReactNode;
-  
-  calibrate?: boolean;
-  
-  mapping?: BoardMapping;
-  
-  onMappingChange?: (m: BoardMapping) => void;
-  
   highlightedPositions?: Array<{type: 'RING' | 'HOME', idx: number}>;
-  
   onPawnClick?: (pawn: any) => void;
-  
   onPositionClick?: (position: {type: 'RING' | 'HOME', idx: number}) => void;
 };
 
-export type Point = { x: number; y: number };
-export type BoardMapping = {
-  size: number; 
-  ring: Point[]; 
-  homes: Point[][]; 
-  bases: Point[][]; 
-  finished: Point[]; 
-  
-  startOverrideByPlayer?: Point[]; 
-  homeEntryOverrideByPlayer?: Point[]; 
-};
 
 export default function Board({
   src = '/board.png',
   className,
-  showGrid = false,
-  children,
-  calibrate = false,
-  mapping,
-  onMappingChange,
   highlightedPositions = [],
   onPawnClick,
   onPositionClick,
@@ -57,127 +25,9 @@ export default function Board({
   const { gameState, selectedPawn, setSelectedPawn, myPlayerSlot, animatingPawns, displayedCard } = useGameStore();
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const defaultGeometry = useMemo(() => {
-    return defaultBoardMapping;
-  }, []);
+  const geometry = useMemo(() => defaultBoardMapping, []);
+  const anchors = useMemo(() => computeAnchors(geometry as any), []);
 
-  const geometry: BoardMapping = useMemo(() => {
-    if (mapping) return mapping;
-    return defaultGeometry;
-  }, [mapping, defaultGeometry]);
-
-  const [localMap, setLocalMap] = useState<BoardMapping>(geometry);
-  const activeMap = calibrate ? localMap : geometry;
-  const anchors = useMemo(() => computeAnchors(activeMap as any), [activeMap]);
-
-  const [group, setGroup] = useState<'ring' | 'home0' | 'home1' | 'home2' | 'home3' | 'base0' | 'base1' | 'base2' | 'base3' | 'finished'>('ring');
-  const [step, setStep] = useState<number>(50);
-
-  const addPoint = (p: Point) => {
-    setLocalMap((prev) => {
-      const clone: BoardMapping = JSON.parse(JSON.stringify(prev));
-      switch (group) {
-        case 'ring':
-          clone.ring.push(p);
-          break;
-        case 'finished':
-          clone.finished.push(p);
-          break;
-        default: {
-          const [kind, sIdxStr] = group.startsWith('home') ? ['home', group.slice(4)] : ['base', group.slice(4)];
-          const sIdx = Number(sIdxStr);
-          if (kind === 'home') clone.homes[sIdx].push(p);
-          else clone.bases[sIdx].push(p);
-        }
-      }
-      onMappingChange?.(clone);
-      return clone;
-    });
-  };
-
-  const handleSvgClick: React.MouseEventHandler<SVGSVGElement> = (e) => {
-    if (!calibrate) return;
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * activeMap.size;
-    const y = ((e.clientY - rect.top) / rect.height) * activeMap.size;
-    addPoint({ x, y });
-  };
-
-  const undo = () => {
-    setLocalMap((prev) => {
-      const clone: BoardMapping = JSON.parse(JSON.stringify(prev));
-      switch (group) {
-        case 'ring':
-          clone.ring.pop();
-          break;
-        case 'finished':
-          clone.finished.pop();
-          break;
-        default: {
-          const [kind, sIdxStr] = group.startsWith('home') ? ['home', group.slice(4)] : ['base', group.slice(4)];
-          const sIdx = Number(sIdxStr);
-          if (kind === 'home') clone.homes[sIdx].pop();
-          else clone.bases[sIdx].pop();
-        }
-      }
-      onMappingChange?.(clone);
-      return clone;
-    });
-  };
-
-  const clear = () => {
-    setLocalMap((prev) => {
-      const clone: BoardMapping = JSON.parse(JSON.stringify(prev));
-      switch (group) {
-        case 'ring':
-          clone.ring = [];
-          break;
-        case 'finished':
-          clone.finished = [];
-          break;
-        default: {
-          const [kind, sIdxStr] = group.startsWith('home') ? ['home', group.slice(4)] : ['base', group.slice(4)];
-          const sIdx = Number(sIdxStr);
-          if (kind === 'home') clone.homes[sIdx] = [];
-          else clone.bases[sIdx] = [];
-        }
-      }
-      onMappingChange?.(clone);
-      return clone;
-    });
-  };
-
-  const exportMap = async () => {
-    const text = JSON.stringify(localMap, null, 2);
-    try {
-      await navigator.clipboard.writeText(text);
-      
-    } catch {
-      // Fallback if clipboard is not available
-    }
-  };
-
-  const getActiveList = (m: BoardMapping): Point[] => {
-    if (group === 'ring') return m.ring;
-    if (group === 'finished') return m.finished;
-    const [kind, idxStr] = group.startsWith('home') ? ['home', group.slice(4)] : ['base', group.slice(4)];
-    const idx = Number(idxStr);
-    return kind === 'home' ? m.homes[idx] : m.bases[idx];
-  };
-
-  const addRelative = (dx: number, dy: number) => {
-    setLocalMap((prev) => {
-      const clone: BoardMapping = JSON.parse(JSON.stringify(prev));
-      const list = getActiveList(clone);
-      const last = list[list.length - 1] ?? { x: activeMap.size / 2, y: activeMap.size / 2 };
-      const next = { x: last.x + dx, y: last.y + dy };
-      list.push(next);
-      onMappingChange?.(clone);
-      return clone;
-    });
-  };
 
   return (
     <div
@@ -509,72 +359,6 @@ export default function Board({
         })}
       </svg>
 
-      {calibrate && (
-        <div
-          style={{
-            position: 'absolute',
-            left: 12,
-            top: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            background: 'rgba(0,0,0,0.55)',
-            color: '#fff',
-            padding: 12,
-            borderRadius: 8,
-            pointerEvents: 'auto',
-            zIndex: 4,
-          }}
-        >
-          <div style={{ fontWeight: 700 }}>Calibration</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {['ring','home0','home1','home2','home3','base0','base1','base2','base3','finished'].map((g) => (
-              <button
-                key={g}
-                onClick={() => setGroup(g as any)}
-                style={{
-                  background: group === g ? '#60a5fa' : '#374151',
-                  color: 'white',
-                  border: 'none',
-                  padding: '4px 8px',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>Pas</span>
-            <input
-              style={{ width: 64 }}
-              type="number"
-              value={step}
-              onChange={(e) => setStep(Number(e.target.value) || 0)}
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 32px)', gap: 4 }}>
-              <div />
-              <button onClick={() => addRelative(0, -step)} style={{ padding: 4, borderRadius: 6, border: 'none', cursor: 'pointer' }}>↑</button>
-              <div />
-              <button onClick={() => addRelative(-step, 0)} style={{ padding: 4, borderRadius: 6, border: 'none', cursor: 'pointer' }}>←</button>
-              <button onClick={() => addRelative(0, 0)} style={{ padding: 4, borderRadius: 6, border: 'none', cursor: 'pointer' }}>•</button>
-              <button onClick={() => addRelative(step, 0)} style={{ padding: 4, borderRadius: 6, border: 'none', cursor: 'pointer' }}>→</button>
-              <div />
-              <button onClick={() => addRelative(0, step)} style={{ padding: 4, borderRadius: 6, border: 'none', cursor: 'pointer' }}>↓</button>
-              <div />
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={undo} style={{ padding: '4px 8px', borderRadius: 6, border: 'none', cursor: 'pointer' }}>Undo</button>
-            <button onClick={clear} style={{ padding: '4px 8px', borderRadius: 6, border: 'none', cursor: 'pointer' }}>Clear</button>
-            <button onClick={exportMap} style={{ padding: '4px 8px', borderRadius: 6, border: 'none', cursor: 'pointer' }}>Exporter</button>
-          </div>
-          <div style={{ fontSize: 12, opacity: 0.85 }}>
-            Cliquez sur le plateau pour ajouter des points dans le groupe courant.
-          </div>
-        </div>
-      )}
 
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3 }}>
         <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'auto' }}>{children}</div>

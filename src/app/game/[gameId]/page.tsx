@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Board from "../../../components/Board";
 import Hand from "../../../components/Hand";
-import { useGameStore, Pawn, PawnLocation } from "../../../store/gameStore";
-import type { Card } from "../../../store/gameStore";
-import { calculateAnimationPath, calculateStepInterval } from "../../../utils/animationHelper";
+import { useGameStore } from "@/hooks/gameStore";
+import type { Card, Pawn, PawnLocation } from "@/types";
+import { calculateAnimationPath, calculateStepInterval } from "@/lib/animationHelper";
 
 export default function GamePage() {
   const params = useParams();

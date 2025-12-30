@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useThemeStore } from "@/store/themeStore";
+import { useThemeStore } from "@/hooks/themeStore";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useThemeStore();

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/hooks/authStore";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {

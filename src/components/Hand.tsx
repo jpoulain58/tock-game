@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "@/store/gameStore";
+import type { Card } from "@/types";
 
 type Props = {
   hand: Card[];
