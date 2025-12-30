@@ -12,9 +12,7 @@ const httpServer = createServer(app);
 const allowedOrigins: string[] = [
   "http://localhost:3000",
   "https://tock-game.vercel.app",
-  "https://tock-game-le783z0y4-jpoulain58s-projects.vercel.app",
-  "https://tock-game-git-main-jpoulain58s-projects.vercel.app",
-  "https://tock-game-*-jpoulain58s-projects.vercel.app",
+  "https://tock-game-fwvb8h6q5-jpoulain58s-projects.vercel.app",
   process.env.CLIENT_URL || "",
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
   process.env.FRONTEND_URL || ""
@@ -29,8 +27,15 @@ app.use(cors({
     // Allow localhost in development
     if (origin.includes('localhost')) return callback(null, true);
 
-    // Allow Vercel deployments
-    if (origin.includes('vercel.app')) return callback(null, true);
+    // Allow ALL Vercel deployments for this project
+    if (origin && origin.includes('vercel.app')) {
+      // Specifically allow tock-game deployments
+      if (origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
+        return callback(null, true);
+      }
+      // Allow other Vercel deployments
+      return callback(null, true);
+    }
 
     // Check against allowed origins
     if (allowedOrigins.includes(origin)) {
@@ -72,8 +77,15 @@ const io = new Server(httpServer, {
       // Allow localhost in development
       if (origin.includes('localhost')) return callback(null, true);
 
-      // Allow Vercel deployments
-      if (origin.includes('vercel.app')) return callback(null, true);
+      // Allow ALL Vercel deployments for this project
+      if (origin && origin.includes('vercel.app')) {
+        // Specifically allow tock-game deployments
+        if (origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
+          return callback(null, true);
+        }
+        // Allow other Vercel deployments
+        return callback(null, true);
+      }
 
       // Check against allowed origins
       if (allowedOrigins.includes(origin)) {
