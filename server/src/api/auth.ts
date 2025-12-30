@@ -7,13 +7,11 @@ import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email';
 
 const router = Router();
 
-router.post('/register', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+router.options('*', (req, res) => {
+  res.sendStatus(204);
+});
 
+router.post('/register', async (req, res) => {
   try {
     const { firstName, lastName, username, email, password } = req.body;
 
@@ -75,12 +73,6 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const { login, password } = req.body;
 
@@ -133,12 +125,6 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/verify-email', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const { token } = req.query;
 
@@ -183,12 +169,6 @@ router.get('/verify-email', async (req, res) => {
 });
 
 router.get('/me', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const authHeader = req.headers.authorization;
 
@@ -227,12 +207,6 @@ router.get('/me', async (req, res) => {
 });
 
 router.post('/resend-verification', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const { email } = req.body;
 
@@ -277,12 +251,6 @@ router.post('/resend-verification', async (req, res) => {
 });
 
 router.post('/forgot-password', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const { email } = req.body;
 
@@ -326,12 +294,6 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 router.post('/reset-password', async (req, res) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-
   try {
     const { token, password } = req.body;
 
