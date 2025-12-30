@@ -96,8 +96,8 @@ function handlePlayCard(
   const newHand = session.game.state.players[player.slot].hand;
   socket.emit("cardsDealt", { hand: newHand });
 
-  if (result.events.some((event: any) => event.type === "roundRedistribution")) {
-    const redistributionEvent = result.events.find((event: any) => event.type === "roundRedistribution");
+  if (result.events?.some((event: any) => event.type === "roundRedistribution")) {
+    const redistributionEvent = result.events?.find((event: any) => event.type === "roundRedistribution");
     if (redistributionEvent) {
       session.players.forEach((player, index) => {
         const hand = redistributionEvent.hands[index];
@@ -171,8 +171,8 @@ function handlePassTurn(
   const newHand = session.game.state.players[player.slot].hand;
   socket.emit("cardsDealt", { hand: newHand });
 
-  if (result.events.some((event: any) => event.type === "roundRedistribution")) {
-    const redistributionEvent = result.events.find((event: any) => event.type === "roundRedistribution");
+  if (result.events?.some((event: any) => event.type === "roundRedistribution")) {
+    const redistributionEvent = result.events?.find((event: any) => event.type === "roundRedistribution");
     if (redistributionEvent) {
       session.players.forEach((player, index) => {
         const hand = redistributionEvent.hands[index];

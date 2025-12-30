@@ -64,7 +64,6 @@ router.post('/register', async (req, res) => {
       userId: user.id,
     });
   } catch (error) {
-('Erreur lors de l\'inscription:', error);
     res.status(500).json({ error: 'Erreur serveur lors de l\'inscription' });
   }
 });
@@ -117,7 +116,6 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (error) {
-('Erreur lors de la connexion:', error);
     res.status(500).json({ error: 'Erreur serveur lors de la connexion' });
   }
 });
@@ -162,7 +160,6 @@ router.get('/verify-email', async (req, res) => {
       username: verification.user.username 
     });
   } catch (error) {
-('Erreur lors de la vérification:', error);
     res.status(500).json({ error: 'Erreur serveur lors de la vérification' });
   }
 });
@@ -201,7 +198,6 @@ router.get('/me', async (req, res) => {
 
     res.json({ user });
   } catch (error) {
-('Erreur lors de la récupération du profil:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -246,7 +242,6 @@ router.post('/resend-verification', async (req, res) => {
 
     res.json({ message: 'Email de vérification renvoyé' });
   } catch (error) {
-('Erreur lors du renvoi:', error);
     res.status(500).json({ error: 'Erreur serveur lors du renvoi' });
   }
 });
@@ -280,7 +275,6 @@ router.post('/forgot-password', async (req, res) => {
     try {
       await sendPasswordResetEmail(user.email, user.username, resetToken);
     } catch (emailError) {
-("Erreur lors de l'envoi de l'email de reset:", emailError);
       return res
         .status(500)
         .json({ error: "Impossible d'envoyer l'email de réinitialisation" });
@@ -291,7 +285,6 @@ router.post('/forgot-password', async (req, res) => {
         'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
     });
   } catch (error) {
-('Erreur lors de la demande de reset password:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -338,7 +331,6 @@ router.post('/reset-password', async (req, res) => {
         'Mot de passe mis à jour avec succès. Vous pouvez vous connecter.',
     });
   } catch (error) {
-('Erreur lors de la réinitialisation du mot de passe:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });

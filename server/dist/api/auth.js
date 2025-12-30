@@ -58,7 +58,6 @@ router.post('/register', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Erreur lors de l\'inscription:', error);
         res.status(500).json({ error: 'Erreur serveur lors de l\'inscription' });
     }
 });
@@ -103,7 +102,6 @@ router.post('/login', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Erreur lors de la connexion:', error);
         res.status(500).json({ error: 'Erreur serveur lors de la connexion' });
     }
 });
@@ -140,7 +138,6 @@ router.get('/verify-email', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Erreur lors de la vérification:', error);
         res.status(500).json({ error: 'Erreur serveur lors de la vérification' });
     }
 });
@@ -173,7 +170,6 @@ router.get('/me', async (req, res) => {
         res.json({ user });
     }
     catch (error) {
-        console.error('Erreur lors de la récupération du profil:', error);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -209,7 +205,78 @@ router.post('/resend-verification', async (req, res) => {
         res.json({ message: 'Email de vérification renvoyé' });
     }
     catch (error) {
-        console.error('Erreur lors du renvoi:', error);
+        res.status(500).json({ error: 'Erreur serveur lors du renvoi' });
+    }
+});
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: 'Email requis' });
+        }
+        const user = await prisma_1.prisma.user.findUnique({
+            where: { email },
+        });
+        // On ne révèle pas si l'utilisateur existe ou non pour des raisons de sécurité
+        if (!user) {
+            return res.json({
+                message: 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+            });
+        }
+        const resetToken = (0, jwt_1.generateResetToken)({
+            userId: user.id,
+            email: user.email,
+            username: user.username,
+        });
+        try {
+            await (0, email_1.sendPasswordResetEmail)(user.email, user.username, resetToken);
+        }
+        catch (emailError) {
+            return res
+                .status(500)
+                .json({ error: "Impossible d'envoyer l'email de réinitialisation" });
+        }
+        return res.json({
+            message: 'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+        });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res
+                .status(400)
+                .json({ error: 'Token et nouveau mot de passe requis' });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({
+                error: 'Le mot de passe doit contenir au moins 8 caractères',
+            });
+        }
+        const payload = (0, jwt_1.verifyToken)(token);
+        if (!payload) {
+            return res.status(400).json({ error: 'Token invalide ou expiré' });
+        }
+        const user = await prisma_1.prisma.user.findUnique({
+            where: { id: payload.userId },
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        }
+        const passwordHash = await bcryptjs_1.default.hash(password, 10);
+        await prisma_1.prisma.user.update({
+            where: { id: user.id },
+            data: { passwordHash },
+        });
+        return res.json({
+            message: 'Mot de passe mis à jour avec succès. Vous pouvez vous connecter.',
+        });
+    }
+    catch (error) {
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });

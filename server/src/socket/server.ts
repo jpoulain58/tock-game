@@ -12,13 +12,17 @@ const httpServer = createServer(app);
 const allowedOrigins: string[] = [
   "http://localhost:3000",
   "https://tock-game.vercel.app",
-  process.env.CLIENT_URL || ""
+  "https://tock-game-le783z0y4-jpoulain58s-projects.vercel.app",
+  process.env.CLIENT_URL || "",
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : ""
 ].filter(origin => origin !== "");
 
 
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 app.use(express.json());
 
