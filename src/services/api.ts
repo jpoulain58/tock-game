@@ -7,6 +7,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // IMPORTANT pour CORS avec cookies/auth
 });
 
 api.interceptors.request.use((config) => {
@@ -47,5 +48,6 @@ export const authAPI = {
   forgotPassword: (email: string) => api.post('/api/auth/forgot-password', { email }),
   resetPassword: (token: string, password: string) =>
     api.post('/api/auth/reset-password', { token, password }),
+  testCors: () => api.get('/cors-test'),
 };
 
