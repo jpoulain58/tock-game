@@ -48,7 +48,7 @@ const corsOptions = {
             return callback(null, true);
         }
         console.log('❌ Blocking origin:', origin);
-        return callback(new Error('Not allowed by CORS'));
+        return callback(null, true); // TEMPORARILY ALLOW ALL for debugging
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -62,22 +62,12 @@ const corsOptions = {
         'Access-Control-Request-Headers'
     ],
     exposedHeaders: ['Set-Cookie'],
-    optionsSuccessStatus: 200,
-    preflightContinue: false
+    maxAge: 86400, // 24 hours
+    optionsSuccessStatus: 204
 };
 app.use((0, cors_1.default)(corsOptions));
+app.options('*', (0, cors_1.default)(corsOptions)); // Enable pre-flight for all routes
 app.use(express_1.default.json());
-// Handle preflight requests explicitly
-app.options("*", (req, res) => {
-    console.log('🔄 OPTIONS preflight request from origin:', req.headers.origin);
-    console.log('📋 OPTIONS headers:', req.headers['access-control-request-method'], req.headers['access-control-request-headers']);
-    res.header('Access-Control-Allow-Origin', req.headers.origin || 'https://tock-game.vercel.app');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
-    res.header('Access-Control-Max-Age', '86400'); // 24 hours
-    res.sendStatus(200);
-});
 app.use("/api/auth", auth_1.default);
 app.get("/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
