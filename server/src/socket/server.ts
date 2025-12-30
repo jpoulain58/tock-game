@@ -72,9 +72,15 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
+// CORS middleware must be first - it handles OPTIONS automatically
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
 app.use(express.json());
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path} from origin: ${req.headers.origin}`);
+  next();
+});
 
 app.use("/api/auth", authRoutes);
 

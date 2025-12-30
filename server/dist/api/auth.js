@@ -6,10 +6,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
+const cors_1 = __importDefault(require("cors"));
 const prisma_1 = require("../utils/prisma");
 const jwt_1 = require("../utils/jwt");
 const email_1 = require("../utils/email");
 const router = (0, express_1.Router)();
+// Apply CORS to this router as well
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin
+        if (!origin)
+            return callback(null, true);
+        // Allow localhost
+        if (origin.includes('localhost'))
+            return callback(null, true);
+        // Allow ALL Vercel domains
+        if (origin.includes('vercel.app'))
+            return callback(null, true);
+        // Allow all for now (debugging)
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    optionsSuccessStatus: 204
+};
+router.use((0, cors_1.default)(corsOptions));
+router.options('*', (0, cors_1.default)(corsOptions));
 router.post('/register', async (req, res) => {
     try {
         const { firstName, lastName, username, email, password } = req.body;

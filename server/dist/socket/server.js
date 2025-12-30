@@ -65,9 +65,14 @@ const corsOptions = {
     maxAge: 86400, // 24 hours
     optionsSuccessStatus: 204
 };
+// CORS middleware must be first - it handles OPTIONS automatically
 app.use((0, cors_1.default)(corsOptions));
-app.options('*', (0, cors_1.default)(corsOptions)); // Enable pre-flight for all routes
 app.use(express_1.default.json());
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`📨 ${req.method} ${req.path} from origin: ${req.headers.origin}`);
+    next();
+});
 app.use("/api/auth", auth_1.default);
 app.get("/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
