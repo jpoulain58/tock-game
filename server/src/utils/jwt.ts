@@ -13,6 +13,10 @@ export function generateToken(payload: JWTPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
 }
 
+export function generateResetToken(payload: JWTPayload): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' } as jwt.SignOptions);
+}
+
 export function verifyToken(token: string): JWTPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload;

@@ -13,7 +13,6 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
         const { state } = JSON.parse(savedTheme);
         setTheme(state.theme);
       } catch (e) {
-        console.error('Error loading theme:', e);
       }
     }
   }, [setTheme]);

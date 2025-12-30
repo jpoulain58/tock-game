@@ -154,10 +154,8 @@ export default function Board({
     try {
       await navigator.clipboard.writeText(text);
       
-      console.info('[Board] Cartographie copiée dans le presse-papiers');
     } catch {
-      
-      console.log(text);
+      // Fallback if clipboard is not available
     }
   };
 
@@ -364,7 +362,6 @@ export default function Board({
           
           if (pawn.location.type === 'RING') {
             pos = activeMap.ring[pawn.location.idx % activeMap.ring.length];
-            console.log(`🎯 Pion ${pawn.id} sur RING index ${pawn.location.idx}, position:`, pos);
           } else if (pawn.location.type === 'HOME') {
             const lane = activeMap.homes[pawn.player % activeMap.homes.length];
             pos = lane[Math.min(pawn.location.idx, lane.length - 1)];
@@ -385,7 +382,6 @@ export default function Board({
           }
 
           if (!pos) {
-            console.warn(`⚠️ Pion ${pawn.id} n'a pas de position valide:`, pawn.location);
             return null;
           }
 

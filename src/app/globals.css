@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  input,
+  textarea,
+  select {
+    color: #0f172a;
+    caret-color: #0f172a;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #4b5563;
+  }
+}

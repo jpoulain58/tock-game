@@ -27,54 +27,40 @@ export default function LobbyPage() {
   useEffect(() => {
     
     const storedName = localStorage.getItem("playerName") || "";
-    console.log("📝 Nom récupéré du localStorage:", storedName);
     setPlayerName(storedName);
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    console.log("🔌 Connexion au serveur:", socketUrl);
     const newSocket = io(socketUrl);
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("✅ Connecté au serveur socket, ID:", newSocket.id);
 
       if (storedName && storedName.trim()) {
-        console.log("🚀 Auto-join avec le nom:", storedName);
-        console.log("🎮 Game ID:", gameId);
-        
-        newSocket.emit("joinGame", { 
-          gameId, 
+        newSocket.emit("joinGame", {
+          gameId,
           playerId: newSocket.id,
           playerName: storedName
         });
-        
+
         setIsJoined(true);
-        console.log("✅ Commande joinGame envoyée");
       } else {
-        console.log("⚠️ Pas de nom stocké, affichage du formulaire");
       }
     });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
-      console.log("👥 Player joined", data);
-      console.log("👤 Joueurs dans la room:", data.players.length);
-      console.log("🎯 Je suis l'hôte ?", data.hostId === newSocket.id);
       
       setPlayers(data.players);
 
       if (data.hostId && data.hostId === newSocket.id) {
-        console.log("👑 Je suis confirmé comme hôte");
         setIsHost(true);
       }
     });
 
     newSocket.on("playerLeft", (data: { gameId: string; players: Player[] }) => {
-      console.log("Player left", data);
       setPlayers(data.players);
     });
 
     newSocket.on("teamChanged", (data: { gameId: string; players: Player[]; hostId?: string }) => {
-      console.log("Team changed", data);
       setPlayers(data.players);
       
       if (data.hostId && data.hostId === newSocket.id) {
@@ -83,7 +69,6 @@ export default function LobbyPage() {
     });
 
     newSocket.on("readyChanged", (data: { gameId: string; players: Player[]; hostId?: string }) => {
-      console.log("Ready changed", data);
       setPlayers(data.players);
       
       if (data.hostId && data.hostId === newSocket.id) {
@@ -92,13 +77,11 @@ export default function LobbyPage() {
     });
 
     newSocket.on("gameStarted", (data: { gameId: string; gameState: any }) => {
-      console.log("Game started", data);
       
       router.push(`/game/${gameId}`);
     });
 
     newSocket.on("error", (data: { message: string }) => {
-      console.error("❌ Erreur reçue du serveur:", data.message);
       setError(data.message);
       alert(`Erreur: ${data.message}`);
     });
@@ -106,7 +89,6 @@ export default function LobbyPage() {
     return () => {
 
       if (newSocket && !window.location.pathname.includes('/game/')) {
-        console.log("🚪 Fermeture de la socket (quitte le lobby)");
         newSocket.emit("leaveGame", { gameId, playerId: newSocket.id });
         newSocket.close();
       }

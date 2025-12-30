@@ -124,6 +124,45 @@ export class TockGame {
     return a;
   }
 
+  checkRoundEnd(): boolean {
+    return this.state.players.every(player => player.hand.length === 0);
+  }
+
+  redistributeCards(): { success: boolean; events: GameEvent[]; hands: Card[][] } {
+    const events: GameEvent[] = [];
+    const hands: Card[][] = [];
+
+    if (this.state.deck.length < this.state.players.length * 5) {
+      if (this.state.discard.length > 0) {
+        const lastCard = this.state.discard.pop()!;
+        this.state.deck = this.shuffle(this.state.discard);
+        this.state.discard = [lastCard];
+      } else {
+        return { success: false, events: [], hands: [] };
+      }
+    }
+
+    for (let i = 0; i < this.state.players.length; i++) {
+      const player = this.state.players[i];
+      const newHand: Card[] = [];
+
+      for (let j = 0; j < 5; j++) {
+        if (this.state.deck.length > 0) {
+          const card = this.state.deck.pop()!;
+          newHand.push(card);
+        }
+      }
+
+      player.hand = newHand;
+      hands[i] = newHand;
+      events.push({ type: "cardsRedistributed", playerSlot: i, handSize: newHand.length });
+    }
+
+    events.push({ type: "roundEnded" });
+
+    return { success: true, events, hands };
+  }
+
   getPawnAtRing(idx: number): Pawn | undefined {
     return this.state.pawns.find(p => p.location.type === "RING" && p.location.idx === idx);
   }
@@ -382,7 +421,7 @@ export class TockGame {
       if (!player.hand.find(c => c.id === card.id)) {
         return { success: false, error: "Carte non présente dans votre main" };
       }
-      
+
       player.hand = player.hand.filter(c => c.id !== card.id);
       this.state.discard.push(card);
       events.push({ type: "cardDiscarded", card });
@@ -392,17 +431,19 @@ export class TockGame {
         this.state.deck = this.shuffle(this.state.discard);
         this.state.discard = [lastCard];
       }
-      
-      if (this.state.deck.length > 0) {
-        const newCard = this.state.deck.pop()!;
-        player.hand.push(newCard);
-        events.push({ type: "cardDrawn", playerSlot });
-      }
     }
 
     events.push({ type: "turnPassed", playerSlot });
 
     this.state.currentPlayer = (this.state.currentPlayer + 1) % this.state.players.length;
+
+    if (this.checkRoundEnd()) {
+      const redistribution = this.redistributeCards();
+      if (redistribution.success) {
+        events.push(...redistribution.events);
+        events.push({ type: "roundRedistribution", hands: redistribution.hands });
+      }
+    }
 
     return { success: true, events };
   }
@@ -434,20 +475,21 @@ export class TockGame {
       events.push({ type: "cardDiscarded", card });
 
       if (this.state.deck.length === 0 && this.state.discard.length > 1) {
-        
+
         const lastCard = this.state.discard.pop()!;
         this.state.deck = this.shuffle(this.state.discard);
         this.state.discard = [lastCard];
       }
-      
-      if (this.state.deck.length > 0) {
-        const newCard = this.state.deck.pop()!;
-        player.hand.push(newCard);
-        events.push({ type: "cardDrawn", playerSlot });
-      }
 
       this.state.currentPlayer = (this.state.currentPlayer + 1) % this.state.players.length;
-      console.log(`🔄 consumeCard: Tour passé de ${oldCurrentPlayer} → ${this.state.currentPlayer}`);
+
+      if (this.checkRoundEnd()) {
+        const redistribution = this.redistributeCards();
+        if (redistribution.success) {
+          events.push(...redistribution.events);
+          events.push({ type: "roundRedistribution", hands: redistribution.hands });
+        }
+      }
     };
 
     if (card.rank === "J") {
@@ -606,9 +648,9 @@ export class TockGame {
     }
 
     if (card.rank === "5") {
-      const pawn = this.state.pawns.find(p => p.id === action.pawnId && p.player === playerSlot);
+      const pawn = this.state.pawns.find(p => p.id === action.pawnId);
       if (!pawn) return { success: false, error: "Pion invalide" };
-      
+
       return this.handleNormalMove(pawn, 5, playerSlot, events, consumeCard);
     }
 

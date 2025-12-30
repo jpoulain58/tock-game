@@ -19,7 +19,6 @@ api.interceptors.request.use((config) => {
           config.headers.Authorization = `Bearer ${state.token}`;
         }
       } catch (e) {
-        console.error('Error parsing auth storage:', e);
       }
     }
   }
@@ -45,5 +44,8 @@ export const authAPI = {
   verifyEmail: (token: string) => api.get(`/api/auth/verify-email?token=${token}`),
   getMe: () => api.get('/api/auth/me'),
   resendVerification: (email: string) => api.post('/api/auth/resend-verification', { email }),
+  forgotPassword: (email: string) => api.post('/api/auth/forgot-password', { email }),
+  resetPassword: (token: string, password: string) =>
+    api.post('/api/auth/reset-password', { token, password }),
 };
 

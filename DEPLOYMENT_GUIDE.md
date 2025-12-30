@@ -50,7 +50,7 @@ Ajoute ces variables d'environnement :
 
 ```env
 NEXT_PUBLIC_API_URL=https://TON-BACKEND-URL
-NEXT_PUBLIC_SOCKET_URL=https://TON-BACKEND-URL
+NEXT_PUBLIC_SOCKET_URL=https://TON-BACKEND-URL  
 ```
 
 ⚠️ **IMPORTANT** : Tu devras revenir ici après avoir déployé le backend pour mettre la vraie URL !

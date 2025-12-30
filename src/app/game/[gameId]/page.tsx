@@ -40,18 +40,15 @@ export default function GamePage() {
   const [chatInput, setChatInput] = useState("");
   const [playerName, setPlayerName] = useState("");
   const [localPlayerSlot, setLocalPlayerSlot] = useState<number | null>(null);
+  const [sessionPlayers, setSessionPlayers] = useState<any[]>([]);
   const [showPassTurnModal, setShowPassTurnModal] = useState(false);
   const [cardToDiscard, setCardToDiscard] = useState<Card | null>(null);
   const [highlightedPositions, setHighlightedPositions] = useState<Array<{type: 'RING' | 'HOME', idx: number}>>([]);
   const [wantsToExit, setWantsToExit] = useState<boolean | null>(null);
+  const [swapFirstPawn, setSwapFirstPawn] = useState<Pawn | null>(null);
 
-  console.log("🎨 === RENDER GamePage ===");
-  console.log("📍 myPlayerSlot (store):", myPlayerSlot);
-  console.log("📍 localPlayerSlot (state):", localPlayerSlot);
-  console.log("🎮 gameState:", gameState?.currentPlayer);
 
   useEffect(() => {
-    console.log("🔄 useEffect de la page de jeu - Début");
 
     const storedName = localStorage.getItem("playerName") || "Joueur";
     setPlayerName(storedName);
@@ -60,14 +57,12 @@ export default function GamePage() {
     let isNewSocket = false;
 
     if (socket && socket.connected) {
-      console.log("♻️ Réutilisation de la socket existante du lobby");
       activeSocket = socket;
       setGameId(gameId);
       const playerName = localStorage.getItem("playerName") || "";
       activeSocket.emit("requestState", { gameId, playerName });
     } else {
       
-      console.log("🔌 Création d'une nouvelle socket pour la page de jeu");
       isNewSocket = true;
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
       activeSocket = io(socketUrl);
@@ -75,11 +70,9 @@ export default function GamePage() {
     setGameId(gameId);
 
       activeSocket.on("connect", () => {
-        console.log("✅ Connecté au serveur de jeu");
         
         const playerName = localStorage.getItem("playerName") || "";
         
-        console.log(`📞 Envoi de requestState - gameId: ${gameId}, playerName: ${playerName}`);
         activeSocket.emit("requestState", { gameId, playerName });
       });
     }
@@ -91,47 +84,48 @@ export default function GamePage() {
       mySlot?: number;
       myPlayerName?: string;
     }) => {
-      console.log("🎮 ========== GAME STATE REÇU ==========");
-      console.log("📦 Data complète:", data);
-      console.log("🎯 Mon slot reçu:", data.mySlot);
-      console.log("👤 Mon nom:", data.myPlayerName);
-      console.log("🔌 Socket ID:", activeSocket.id);
-      console.log("👥 Joueurs:", data.players);
+("🎮 ========== GAME STATE REÇU ==========");
+("📦 Data complète:", data);
+("🎯 Mon slot reçu:", data.mySlot);
+("👤 Mon nom:", data.myPlayerName);
+("🔌 Socket ID:", activeSocket.id);
+("👥 Joueurs:", data.players);
       
       setGameState(data.gameState);
       setMyHand(data.hand);
+      setSessionPlayers(data.players || []);
 
       if (data.mySlot !== undefined && data.mySlot !== null) {
-        console.log(`✅ ✅ ✅ ASSIGNATION DU SLOT: ${data.mySlot}`);
+(`✅ ✅ ✅ ASSIGNATION DU SLOT: ${data.mySlot}`);
         setMyPlayerSlot(data.mySlot);
         setLocalPlayerSlot(data.mySlot);
-        console.log(`💾 Slot enregistré dans le store ET le state local: ${data.mySlot}`);
+(`💾 Slot enregistré dans le store ET le state local: ${data.mySlot}`);
 
         setTimeout(() => {
-          console.log("🔍 Vérification après 100ms:");
-          console.log("   - Store myPlayerSlot:", myPlayerSlot);
-          console.log("   - Local slot:", localPlayerSlot);
+("🔍 Vérification après 100ms:");
+("   - Store myPlayerSlot:", myPlayerSlot);
+("   - Local slot:", localPlayerSlot);
         }, 100);
       } else {
         
-        console.warn("⚠️ Pas de mySlot dans la réponse, fallback sur socket.id");
+("⚠️ Pas de mySlot dans la réponse, fallback sur socket.id");
         const myPlayer = data.players.find(p => p.id === activeSocket.id);
       if (myPlayer) {
-          console.log(`⚠️ Slot trouvé via fallback: ${myPlayer.slot}`);
+(`⚠️ Slot trouvé via fallback: ${myPlayer.slot}`);
         setMyPlayerSlot(myPlayer.slot);
           setLocalPlayerSlot(myPlayer.slot);
         } else {
-          console.error("❌ ERREUR: Impossible de trouver mon joueur !");
-          console.error("   - Socket ID cherché:", activeSocket.id);
-          console.error("   - IDs disponibles:", data.players.map(p => p.id));
+("❌ ERREUR: Impossible de trouver mon joueur !");
+("   - Socket ID cherché:", activeSocket.id);
+("   - IDs disponibles:", data.players.map(p => p.id));
         }
       }
-      console.log("🎮 =====================================");
+("🎮 =====================================");
     };
 
     const handleGameStarted = (data: { gameId: string; gameState: any }) => {
-      console.log("🎮 Partie démarrée", data);
-      console.log("🔄 currentPlayer initial:", data.gameState.currentPlayer);
+("🎮 Partie démarrée", data);
+("🔄 currentPlayer initial:", data.gameState.currentPlayer);
       setGameState(data.gameState);
 
       const playerName = localStorage.getItem("playerName") || "";
@@ -139,8 +133,14 @@ export default function GamePage() {
     };
 
     const handleCardsDealt = (data: { hand: Card[] }) => {
-      console.log("Cartes reçues", data);
-      console.log("📇 Nombre de cartes:", data.hand.length);
+("Cartes reçues", data);
+("📇 Nombre de cartes:", data.hand.length);
+      setMyHand(data.hand);
+    };
+
+    const handleCardsRedistributed = (data: { hand: Card[] }) => {
+("Nouvelles cartes distribuées", data);
+("📇 Nombre de cartes:", data.hand.length);
       setMyHand(data.hand);
     };
 
@@ -153,12 +153,12 @@ export default function GamePage() {
       newStateSummary: any;
       playerName?: string;
     }) => {
-      console.log("✅ ========== MOVE APPLIED REÇU ==========");
-      console.log("📤 Carte jouée:", data.cardPlayed);
-      console.log("👤 Joueur (slot):", data.playerSlot);
-      console.log("🔄 Tour suivant (nouveau currentPlayer):", data.newStateSummary.currentPlayer);
-      console.log("📍 Nouveaux pions:", data.newStateSummary.pawns);
-      console.log("📊 Événements:", data.events);
+("✅ ========== MOVE APPLIED REÇU ==========");
+("📤 Carte jouée:", data.cardPlayed);
+("👤 Joueur (slot):", data.playerSlot);
+("🔄 Tour suivant (nouveau currentPlayer):", data.newStateSummary.currentPlayer);
+("📍 Nouveaux pions:", data.newStateSummary.pawns);
+("📊 Événements:", data.events);
 
       setDisplayedCard({
         card: data.cardPlayed,
@@ -205,11 +205,18 @@ export default function GamePage() {
           });
 
           data.events.forEach((event: any) => {
+            if (event.type === "cardsRedistributed" && event.playerSlot === getCurrentSlot()) {
+              setMyHand([]);
+              setTimeout(() => {
+                setMyHand(event.handSize === 5 ? [] : []);
+              }, 100);
+            }
             addEvent(event);
           });
 
           setSelectedCard(null);
           setSelectedPawn(null);
+          setSwapFirstPawn(null);
         }, delay);
       } else {
         
@@ -223,14 +230,21 @@ export default function GamePage() {
         });
         
         data.events.forEach((event: any) => {
+          if (event.type === "cardsRedistributed" && event.playerSlot === getCurrentSlot()) {
+            setMyHand([]);
+            setTimeout(() => {
+              setMyHand(event.handSize === 5 ? [] : []);
+            }, 100);
+          }
           addEvent(event);
         });
-        
+
         setSelectedCard(null);
         setSelectedPawn(null);
+        setSwapFirstPawn(null);
       }
       
-      console.log("✅ ========================================");
+("✅ ========================================");
     };
 
     const animatePawnMove = (
@@ -244,7 +258,7 @@ export default function GamePage() {
       const path = calculateAnimationPath(from, to, steps, playerSlot);
       const interval = calculateStepInterval(path.length);
       
-      console.log(`🎬 Animation pion ${pawnId}: ${path.length} étapes`);
+(`🎬 Animation pion ${pawnId}: ${path.length} étapes`);
       
       let currentStep = 0;
       
@@ -278,12 +292,12 @@ export default function GamePage() {
     };
 
     const handleInvalidMove = (data: { clientRequestId: string; reason: string }) => {
-      console.error("Mouvement invalide", data);
+("Mouvement invalide", data);
       alert(`Mouvement invalide : ${data.reason}`);
     };
 
     const handleGameEnded = (data: { gameId: string; winnerTeam: number; winnerPlayers: string[] }) => {
-      console.log("Partie terminée", data);
+("Partie terminée", data);
       alert(`Partie terminée ! Équipe ${data.winnerTeam} a gagné : ${data.winnerPlayers.join(", ")}`);
     };
 
@@ -292,49 +306,57 @@ export default function GamePage() {
     };
 
     const handleError = (data: { message: string }) => {
-      console.error("Erreur", data);
+("Erreur", data);
       alert(data.message);
     };
 
     const handleTurnPassed = (data: { playerSlot: number; playerName: string; cardDiscarded?: any; events: any[]; newStateSummary: any }) => {
-      console.log("⏭️ ========== TURN PASSED REÇU ==========");
-      console.log("👤 Joueur qui a passé:", data.playerName, "(slot", data.playerSlot + ")");
-      console.log("🎴 Carte défaussée:", data.cardDiscarded);
-      console.log("🔄 Nouveau currentPlayer:", data.newStateSummary.currentPlayer);
-      console.log("📍 Nouveaux pions:", data.newStateSummary.pawns);
+("⏭️ ========== TURN PASSED REÇU ==========");
+("👤 Joueur qui a passé:", data.playerName, "(slot", data.playerSlot + ")");
+("🎴 Carte défaussée:", data.cardDiscarded);
+("🔄 Nouveau currentPlayer:", data.newStateSummary.currentPlayer);
+("📍 Nouveaux pions:", data.newStateSummary.pawns);
+("📊 Événements:", data.events);
 
       setGameState(prevState => {
         if (!prevState) {
-          console.error("❌ Pas de gameState pour mettre à jour !");
+("❌ Pas de gameState pour mettre à jour !");
           return prevState;
         }
-        
+
         const newState = {
           ...prevState,
           currentPlayer: data.newStateSummary.currentPlayer,
           pawns: data.newStateSummary.pawns,
         };
-        console.log("💾 Ancien currentPlayer:", prevState.currentPlayer);
-        console.log("💾 Nouveau currentPlayer:", newState.currentPlayer);
-        console.log("🔄 Mise à jour du gameState après turnPassed");
+("💾 Ancien currentPlayer:", prevState.currentPlayer);
+("💾 Nouveau currentPlayer:", newState.currentPlayer);
+("🔄 Mise à jour du gameState après turnPassed");
         return newState;
       });
 
       data.events?.forEach(event => {
+        if (event.type === "cardsRedistributed" && event.playerSlot === getCurrentSlot()) {
+          setMyHand([]);
+          setTimeout(() => {
+            setMyHand(event.handSize === 5 ? [] : []);
+          }, 100);
+        }
         addEvent(event);
       });
 
-      addEvent({ 
-        type: "turnPassed", 
+      addEvent({
+        type: "turnPassed",
         playerName: data.playerName,
-        cardDiscarded: data.cardDiscarded 
+        cardDiscarded: data.cardDiscarded
       });
-      console.log("✅ ========================================");
+("✅ ========================================");
     };
 
     activeSocket.on("gameState", handleGameState);
     activeSocket.on("gameStarted", handleGameStarted);
     activeSocket.on("cardsDealt", handleCardsDealt);
+    activeSocket.on("cardsRedistributed", handleCardsRedistributed);
     activeSocket.on("moveApplied", handleMoveApplied);
     activeSocket.on("invalidMove", handleInvalidMove);
     activeSocket.on("gameEnded", handleGameEnded);
@@ -342,14 +364,15 @@ export default function GamePage() {
     activeSocket.on("turnPassed", handleTurnPassed);
     activeSocket.on("error", handleError);
 
-    console.log("🔄 useEffect de la page de jeu - Event listeners attachés");
+("🔄 useEffect de la page de jeu - Event listeners attachés");
 
     return () => {
-      console.log("🧹 Cleanup de la page de jeu");
+("🧹 Cleanup de la page de jeu");
       
       activeSocket.off("gameState", handleGameState);
       activeSocket.off("gameStarted", handleGameStarted);
       activeSocket.off("cardsDealt", handleCardsDealt);
+      activeSocket.off("cardsRedistributed", handleCardsRedistributed);
       activeSocket.off("moveApplied", handleMoveApplied);
       activeSocket.off("invalidMove", handleInvalidMove);
       activeSocket.off("gameEnded", handleGameEnded);
@@ -358,16 +381,51 @@ export default function GamePage() {
       activeSocket.off("error", handleError);
 
       if (isNewSocket && activeSocket) {
-        console.log("🔌 Fermeture de la socket créée par la page de jeu");
+("🔌 Fermeture de la socket créée par la page de jeu");
         activeSocket.close();
       } else {
-        console.log("♻️ Socket du lobby conservée");
+("♻️ Socket du lobby conservée");
       }
     };
   }, []); 
 
+  useEffect(() => {
+    if (!socket || sessionPlayers.length === 0) return;
+    if (localPlayerSlot !== null && myPlayerSlot !== null) return;
+
+    const match = sessionPlayers.find(
+      (player: any) => player.id === socket.id || player.name === playerName
+    );
+
+    if (!match) {
+      return;
+    }
+
+    if (localPlayerSlot === null) {
+      setLocalPlayerSlot(match.slot);
+    }
+    if (myPlayerSlot === null) {
+      setMyPlayerSlot(match.slot);
+    }
+  }, [socket, sessionPlayers, playerName, localPlayerSlot, myPlayerSlot, setMyPlayerSlot]);
+
+  const getCurrentSlot = () => {
+    if (localPlayerSlot !== null) return localPlayerSlot;
+    if (myPlayerSlot !== null) return myPlayerSlot;
+
+    const match = sessionPlayers.find(
+      (player: any) => player.id === socket?.id || player.name === playerName
+    );
+
+    if (typeof match?.slot === "number") {
+      return match.slot;
+    }
+
+    return null;
+  };
+
   const handleCardSelect = (card: Card) => {
-    console.log("🎴 Carte sélectionnée:", card);
+("🎴 Carte sélectionnée:", card);
     setSelectedCard(card);
     
     setSelectedPawn(null);
@@ -376,10 +434,11 @@ export default function GamePage() {
     if (card.rank === "A" || card.rank === "K") {
       const shouldExit = confirm("Voulez-vous sortir un pion de la base ?");
       setWantsToExit(shouldExit);
-      console.log(`💭 Choix pour ${card.rank}: ${shouldExit ? "Sortie" : "Mouvement"}`);
+(`💭 Choix pour ${card.rank}: ${shouldExit ? "Sortie" : "Mouvement"}`);
     } else {
       setWantsToExit(null);
     }
+  setSwapFirstPawn(null);
   };
 
   const handlePassTurn = () => {
@@ -387,10 +446,10 @@ export default function GamePage() {
       return;
     }
 
-    const currentSlot = localPlayerSlot !== null ? localPlayerSlot : myPlayerSlot;
+    const currentSlot = getCurrentSlot();
     
     if (!socket || !gameState || currentSlot === null) {
-      console.error("❌ Impossible de passer le tour:", { socket: !!socket, gameState: !!gameState, currentSlot });
+("❌ Impossible de passer le tour:", { socket: !!socket, gameState: !!gameState, currentSlot });
       return;
     }
 
@@ -407,21 +466,23 @@ export default function GamePage() {
       playerName,
     });
 
-    console.log("⏭️ Tour passé", `(carte défaussée: ${cardToDiscard.rank}${cardToDiscard.suit})`);
 
     setShowPassTurnModal(false);
     setCardToDiscard(null);
     setSelectedCard(null);
     setSelectedPawn(null);
     setWantsToExit(null);
+    setSwapFirstPawn(null);
   };
 
-  const calculatePossiblePositions = (pawn: Pawn, card: Card): Array<{type: 'RING' | 'HOME', idx: number}> => {
-    if (!gameState) return [];
+  const calculatePossiblePositions = (
+    pawn: Pawn,
+    card: Card,
+    currentSlot: number | null
+  ): Array<{type: 'RING' | 'HOME', idx: number}> => {
+    if (!gameState || currentSlot === null) return [];
     
     const positions: Array<{type: 'RING' | 'HOME', idx: number}> = [];
-    const currentSlot = localPlayerSlot !== null ? localPlayerSlot : myPlayerSlot;
-    if (currentSlot === null) return [];
 
     const HOME_ENTRIES = [71, 18, 54, 36]; 
     const RING_SIZE = 72;
@@ -515,22 +576,68 @@ export default function GamePage() {
   };
 
   const handlePawnClick = (pawn: Pawn) => {
-    console.log("🎯 Clic sur pion:", pawn.id);
+("🎯 Clic sur pion:", pawn.id);
     
     if (!selectedCard) {
       alert("Sélectionnez d'abord une carte !");
       return;
     }
 
-    const currentSlot = localPlayerSlot !== null ? localPlayerSlot : myPlayerSlot;
+    const currentSlot = getCurrentSlot();
 
-    if (pawn.player !== currentSlot) {
-      alert("Ce n'est pas votre pion !");
+    if (currentSlot === null) {
+      alert("Impossible d'identifier votre position joueur. Rafraîchissez la page.");
       return;
     }
 
     if (gameState && gameState.currentPlayer !== currentSlot) {
       alert("Ce n'est pas votre tour !");
+      return;
+    }
+
+    if (selectedCard.rank === "J") {
+      if (pawn.location.type === "BASE") {
+        alert("Le valet ne peut pas échanger un pion encore en base.");
+        return;
+      }
+
+      if (!swapFirstPawn) {
+        setSwapFirstPawn(pawn);
+        setSelectedPawn(pawn);
+        setHighlightedPositions([]);
+        return;
+      }
+
+      if (swapFirstPawn.id === pawn.id) {
+        setSwapFirstPawn(null);
+        setSelectedPawn(null);
+        return;
+      }
+
+      if (!socket) return;
+
+      const action = { pawnAId: swapFirstPawn.id, pawnBId: pawn.id };
+      const clientRequestId = `${socket.id}-${Date.now()}`;
+      const storingPlayerName = localStorage.getItem("playerName") || "";
+
+      socket.emit("playCard", {
+        gameId,
+        playerId: socket.id,
+        clientRequestId,
+        card: selectedCard,
+        action,
+        playerName: storingPlayerName,
+      });
+
+      setSelectedCard(null);
+      setSelectedPawn(null);
+      setHighlightedPositions([]);
+      setSwapFirstPawn(null);
+      return;
+    }
+
+    if (pawn.player !== currentSlot) {
+      alert("Ce n'est pas votre pion !");
       return;
     }
 
@@ -550,12 +657,12 @@ export default function GamePage() {
         playerName,
       });
 
-      console.log("✅ Sortie de pion jouée directement", { card: selectedCard, action });
 
       setSelectedCard(null);
       setSelectedPawn(null);
       setHighlightedPositions([]);
       setWantsToExit(null);
+      setSwapFirstPawn(null);
       return;
     }
 
@@ -571,27 +678,34 @@ export default function GamePage() {
 
     setSelectedPawn(pawn);
     
-    const possiblePositions = calculatePossiblePositions(pawn, selectedCard);
-    console.log("📍 Positions possibles:", possiblePositions);
+    const possiblePositions = calculatePossiblePositions(pawn, selectedCard, currentSlot);
     setHighlightedPositions(possiblePositions);
   };
 
   const handlePositionClick = (position: {type: 'RING' | 'HOME', idx: number}) => {
-    console.log("🎯 Clic sur position:", position);
     
     if (!selectedCard || !selectedPawn || !socket || !gameState) {
       return;
     }
 
-    const currentSlot = localPlayerSlot !== null ? localPlayerSlot : myPlayerSlot;
+    if (selectedCard.rank === "J") {
+      return;
+    }
+
+    const currentSlot = getCurrentSlot();
     
     if (currentSlot === null || gameState.currentPlayer !== currentSlot) {
       return;
     }
 
-    const action = selectedCard.rank === "7" 
-      ? { moves: [{ pawnId: selectedPawn.id, steps: 7 }] }
-      : { pawnId: selectedPawn.id };
+    let action;
+    if (selectedCard.rank === "7") {
+      action = { moves: [{ pawnId: selectedPawn.id, steps: 7 }] };
+    } else if (selectedCard.rank === "A" || selectedCard.rank === "K") {
+      action = { type: "move", pawnId: selectedPawn.id };
+    } else {
+      action = { pawnId: selectedPawn.id };
+    }
 
     const clientRequestId = `${socket.id}-${Date.now()}`;
     const playerName = localStorage.getItem("playerName") || "";
@@ -605,12 +719,12 @@ export default function GamePage() {
       playerName,
     });
 
-    console.log("✅ Carte jouée", { card: selectedCard, action, destination: position });
 
     setSelectedCard(null);
     setSelectedPawn(null);
     setHighlightedPositions([]);
     setWantsToExit(null);
+    setSwapFirstPawn(null);
   };
 
   const handleSendChat = () => {
@@ -636,7 +750,7 @@ export default function GamePage() {
     );
   }
 
-  const effectiveSlot = localPlayerSlot !== null ? localPlayerSlot : myPlayerSlot;
+  const effectiveSlot = getCurrentSlot();
   const isMyTurn = gameState.currentPlayer === effectiveSlot;
 
   const playerColors = [
@@ -648,7 +762,7 @@ export default function GamePage() {
 
   const myColor = effectiveSlot !== null ? playerColors[effectiveSlot] : null;
 
-  console.log("🎨 RENDU - effectiveSlot:", effectiveSlot, "myColor:", myColor);
+("🎨 RENDU - effectiveSlot:", effectiveSlot, "myColor:", myColor);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -800,6 +914,8 @@ export default function GamePage() {
                       {event.type === "capture" && `Pion ${event.capturedPawnId} capturé !`}
                       {event.type === "teleport" && `Téléportation vers ${event.to}`}
                       {event.type === "exit" && `Pion ${event.pawnId} sorti de la base`}
+                      {event.type === "roundEnded" && "🎴 Tour terminé, distribution de nouvelles cartes !"}
+                      {event.type === "swap" && `Pions ${event.pawnAId} et ${event.pawnBId} échangés`}
                     </p>
                   </div>
                 ))}
