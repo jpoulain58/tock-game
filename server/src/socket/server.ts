@@ -11,76 +11,19 @@ const httpServer = createServer(app);
 
 app.set("trust proxy", 1);
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://tock-game.vercel.app",
-  process.env.CLIENT_URL || "",
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-  process.env.FRONTEND_URL || ""
-].filter(origin => origin !== "");
-
+// Simple CORS configuration that works
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    console.log('🔍 CORS check for origin:', origin);
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      console.log('✅ Allowing request with no origin');
-      return callback(null, true);
-    }
-    
-    // Allow localhost in development
-    if (origin.includes('localhost')) {
-      console.log('✅ Allowing localhost origin:', origin);
-      return callback(null, true);
-    }
-    
-    // Allow main production domain
-    if (origin === 'https://tock-game.vercel.app') {
-      console.log('✅ Allowing main production domain:', origin);
-      return callback(null, true);
-    }
-    
-    // Allow ANY Vercel domain (for previews and production)
-    if (origin && origin.includes('vercel.app')) {
-      console.log('✅ Allowing Vercel domain:', origin);
-      return callback(null, true);
-    }
-    
-    // Check against allowed origins
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ Allowing from allowed origins:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('❌ Blocking origin:', origin);
-    return callback(null, true); // TEMPORARILY ALLOW ALL for debugging
-  },
+  origin: true, // Allow all origins (for debugging, we'll restrict after it works)
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'Access-Control-Request-Method',
-    'Access-Control-Request-Headers'
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Set-Cookie'],
-  maxAge: 86400, // 24 hours
+  preflightContinue: false,
   optionsSuccessStatus: 204
 };
 
-// CORS middleware must be first - it handles OPTIONS automatically
 app.use(cors(corsOptions));
 app.use(express.json());
-
-// Log all requests for debugging
-app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.path} from origin: ${req.headers.origin}`);
-  next();
-});
 
 app.use("/api/auth", authRoutes);
 
@@ -99,28 +42,7 @@ app.get("/cors-test", (req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      // Allow localhost in development
-      if (origin.includes('localhost')) return callback(null, true);
-      
-      // Allow main production domain
-      if (origin === 'https://tock-game.vercel.app') return callback(null, true);
-      
-      // Allow ANY Vercel domain (for previews and production)
-      if (origin && origin.includes('vercel.app')) {
-        return callback(null, true);
-      }
-      
-      // Check against allowed origins
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      
-      return callback(new Error('Not allowed by CORS'));
-    },
+    origin: true, // Allow all origins for now
     methods: ["GET", "POST"],
     credentials: true
   }
