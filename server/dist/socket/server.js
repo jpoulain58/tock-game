@@ -14,7 +14,6 @@ const httpServer = (0, http_1.createServer)(app);
 const allowedOrigins = [
     "http://localhost:3000",
     "https://tock-game.vercel.app",
-    "https://tock-game-fwvb8h6q5-jpoulain58s-projects.vercel.app",
     process.env.CLIENT_URL || "",
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
     process.env.FRONTEND_URL || ""
@@ -27,13 +26,11 @@ app.use((0, cors_1.default)({
         // Allow localhost in development
         if (origin.includes('localhost'))
             return callback(null, true);
-        // Allow ALL Vercel deployments for this project
-        if (origin && origin.includes('vercel.app')) {
-            // Specifically allow tock-game deployments
-            if (origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
-                return callback(null, true);
-            }
-            // Allow other Vercel deployments
+        // Allow main production domain
+        if (origin === 'https://tock-game.vercel.app')
+            return callback(null, true);
+        // Allow Vercel preview deployments for this project
+        if (origin && origin.includes('vercel.app') && origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
             return callback(null, true);
         }
         // Check against allowed origins
@@ -71,13 +68,11 @@ const io = new socket_io_1.Server(httpServer, {
             // Allow localhost in development
             if (origin.includes('localhost'))
                 return callback(null, true);
-            // Allow ALL Vercel deployments for this project
-            if (origin && origin.includes('vercel.app')) {
-                // Specifically allow tock-game deployments
-                if (origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
-                    return callback(null, true);
-                }
-                // Allow other Vercel deployments
+            // Allow main production domain
+            if (origin === 'https://tock-game.vercel.app')
+                return callback(null, true);
+            // Allow Vercel preview deployments for this project
+            if (origin && origin.includes('vercel.app') && origin.includes('tock-game') && origin.includes('jpoulain58s-projects')) {
                 return callback(null, true);
             }
             // Check against allowed origins
