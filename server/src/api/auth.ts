@@ -7,10 +7,6 @@ import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email';
 
 const router = Router();
 
-router.options('*', (req, res) => {
-  res.sendStatus(204);
-});
-
 router.post('/register', async (req, res) => {
   try {
     const { firstName, lastName, username, email, password } = req.body;
