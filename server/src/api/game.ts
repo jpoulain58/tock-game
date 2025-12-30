@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { Request, Response } from "express";
 import { TockGame } from "../game/TockGame";
 
 const games: Record<string, TockGame> = {};
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: Request, res: Response) {
   if (req.method === "POST" && req.url?.endsWith("/create")) {
     const gameId = crypto.randomUUID();
     games[gameId] = new TockGame(4);
