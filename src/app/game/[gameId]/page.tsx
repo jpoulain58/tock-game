@@ -47,6 +47,7 @@ export default function GamePage() {
   const [highlightedPositions, setHighlightedPositions] = useState<Array<{type: 'RING' | 'HOME', idx: number}>>([]);
   const [wantsToExit, setWantsToExit] = useState<boolean | null>(null);
   const [swapFirstPawn, setSwapFirstPawn] = useState<Pawn | null>(null);
+  const [gameEndData, setGameEndData] = useState<{ winnerTeam: number; winnerPlayers: string[]; } | null>(null);
 
 
   useEffect(() => {
@@ -298,8 +299,7 @@ export default function GamePage() {
     };
 
     const handleGameEnded = (data: { gameId: string; winnerTeam: number; winnerPlayers: string[] }) => {
-("Partie terminée", data);
-      alert(`Partie terminée ! Équipe ${data.winnerTeam} a gagné : ${data.winnerPlayers.join(", ")}`);
+      setGameEndData({ winnerTeam: data.winnerTeam, winnerPlayers: data.winnerPlayers });
     };
 
     const handleChatMessage = (data: { playerId: string; playerName: string; message: string; timestamp: number }) => {
@@ -1022,6 +1022,73 @@ export default function GamePage() {
             >
               Défausser et passer le tour
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Victory Modal */}
+      {gameEndData && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          {/* Confettis */}
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className="confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'][Math.floor(Math.random() * 6)],
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${3 + Math.random() * 2}s`,
+              }}
+            />
+          ))}
+          
+          <div className="victory-modal glass rounded-3xl shadow-2xl p-10 max-w-lg w-full text-center border-2 border-yellow-400">
+            {/* Trophy Icon */}
+            <div className="trophy-bounce w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+              <svg className="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+
+            {/* Title */}
+            <h2 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+              🎉 Victoire ! 🎉
+            </h2>
+
+            {/* Winner Info */}
+            <div className="mb-6">
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Équipe {gameEndData.winnerTeam === 0 ? "A" : "B"} a gagné !
+              </p>
+              <div className="glass rounded-xl p-4 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Félicitations aux gagnants :</p>
+                {gameEndData.winnerPlayers.map((player, idx) => (
+                  <div key={idx} className="flex items-center justify-center gap-2 mb-2">
+                    <span className="sparkle text-2xl">⭐</span>
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white">{player}</span>
+                    <span className="sparkle text-2xl">⭐</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="flex-1 group relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover-lift overflow-hidden"
+              >
+                <span className="relative z-10">Retour au Dashboard</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="flex-1 glass border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold py-4 px-6 rounded-xl hover-lift"
+              >
+                Accueil
+              </button>
+            </div>
           </div>
         </div>
       )}

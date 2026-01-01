@@ -18,7 +18,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="relative inline-flex items-center h-8 w-14 rounded-full bg-gray-300 dark:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="relative inline-flex items-center h-8 w-14 rounded-full bg-gray-300 dark:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       aria-label="Toggle theme"
       title={`Mode actuel: ${theme === 'dark' ? 'Sombre' : 'Clair'} - Cliquez pour changer`}
     >

@@ -17,7 +17,7 @@ export default function Hand({ hand, onSelect, selectedCard }: Props) {
         return (
           <div key={card.id} className="relative group">
             <button
-              className={`border rounded px-3 py-2 shadow font-mono text-lg transition-all ${
+              className={`border rounded px-3 py-2 shadow font-mono text-lg transition-all cursor-pointer ${
                 isSelected 
                   ? 'bg-yellow-400 dark:bg-yellow-600 border-yellow-600 scale-110 font-bold' 
                   : 'bg-white dark:bg-gray-700 border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
