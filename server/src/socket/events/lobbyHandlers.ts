@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { getOrCreateGameSession, assignSlot } from "../utils";
 import { GamesRegistry } from "../types";
 import { TockGame } from "../../game/TockGame";
+import { createGameInDB } from "../../services/gameService";
 
 interface CreateGamePayload {
   gameId: string;
@@ -278,6 +279,11 @@ function handleStartGame(
 
   session.status = "started";
   session.game.state.status = "started";
+
+  // Sauvegarder la partie en base de données
+  createGameInDB(gameId, socket.id, session).catch((error) => {
+    console.error("Erreur lors de la sauvegarde de la partie:", error);
+  });
 
   io.to(gameId).emit("gameStarted", {
     gameId,

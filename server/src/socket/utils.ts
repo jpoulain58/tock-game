@@ -40,6 +40,7 @@ export function checkVictory(game: TockGame): number | null {
       teamPlayers.some((player) => player.slot === pawn.player)
     );
 
+    // Condition de victoire normale : tous les pions (8) doivent être dans FINISHED
     const allFinished = teamPawns.every((pawn) => pawn.location.type === "FINISHED");
     if (allFinished && teamPawns.length === 8) {
       return team;

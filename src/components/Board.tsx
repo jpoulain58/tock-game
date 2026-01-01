@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useGameStore } from '@/hooks/gameStore';
 import { defaultBoardMapping } from './boardMapping';
+import { computeAnchors } from './tockBoard';
 
 export type BoardProps = {
   src?: string;
@@ -11,6 +12,7 @@ export type BoardProps = {
   highlightedPositions?: Array<{type: 'RING' | 'HOME', idx: number}>;
   onPawnClick?: (pawn: any) => void;
   onPositionClick?: (position: {type: 'RING' | 'HOME', idx: number}) => void;
+  children?: React.ReactNode;
 };
 
 
@@ -20,6 +22,7 @@ export default function Board({
   highlightedPositions = [],
   onPawnClick,
   onPositionClick,
+  children,
 }: BoardProps) {
   const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
   const { gameState, selectedPawn, setSelectedPawn, myPlayerSlot, animatingPawns, displayedCard } = useGameStore();
@@ -27,6 +30,51 @@ export default function Board({
 
   const geometry = useMemo(() => defaultBoardMapping, []);
   const anchors = useMemo(() => computeAnchors(geometry as any), []);
+  const activeMap = geometry; // Alias pour la géométrie du plateau
+  const showGrid = false; // Grid de debug (mettre à true pour voir la grille)
+
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!onPositionClick) return;
+    
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const rect = svg.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 1000;
+    const y = ((e.clientY - rect.top) / rect.height) * 1000;
+
+    // Trouver la position la plus proche cliquée
+    let closestPosition: {type: 'RING' | 'HOME', idx: number} | null = null;
+    let minDistance = Infinity;
+
+    // Vérifier les positions RING
+    geometry.ring.forEach((pos, idx) => {
+      const dx = pos.x - x;
+      const dy = pos.y - y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < minDistance && distance < 30) { // Rayon de clic
+        minDistance = distance;
+        closestPosition = { type: 'RING', idx };
+      }
+    });
+
+    // Vérifier les positions HOME
+    geometry.homes.forEach((home, playerIdx) => {
+      home.forEach((pos, idx) => {
+        const dx = pos.x - x;
+        const dy = pos.y - y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < minDistance && distance < 30) {
+          minDistance = distance;
+          closestPosition = { type: 'HOME', idx: playerIdx * 5 + idx };
+        }
+      });
+    });
+
+    if (closestPosition) {
+      onPositionClick(closestPosition);
+    }
+  };
 
 
   return (

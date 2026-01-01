@@ -1029,20 +1029,6 @@ export default function GamePage() {
       {/* Victory Modal */}
       {gameEndData && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          {/* Confettis */}
-          {Array.from({ length: 50 }).map((_, i) => (
-            <div
-              key={i}
-              className="confetti"
-              style={{
-                left: `${Math.random() * 100}%`,
-                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#ec4899'][Math.floor(Math.random() * 6)],
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${3 + Math.random() * 2}s`,
-              }}
-            />
-          ))}
-          
           <div className="victory-modal glass rounded-3xl shadow-2xl p-10 max-w-lg w-full text-center border-2 border-yellow-400">
             {/* Trophy Icon */}
             <div className="trophy-bounce w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">

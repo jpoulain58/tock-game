@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import express from "express";
 import authRoutes from "../api/auth";
+import statsRoutes from "../api/stats";
 import { GamesRegistry } from "./types";
 import { registerSocketEvents } from "./events";
 
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

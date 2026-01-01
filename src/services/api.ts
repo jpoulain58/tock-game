@@ -51,3 +51,8 @@ export const authAPI = {
   testCors: () => api.get('/cors-test'),
 };
 
+export const statsAPI = {
+  getUserStats: () => api.get('/api/stats/user'),
+  getHistory: () => api.get('/api/stats/history'),
+};
+
