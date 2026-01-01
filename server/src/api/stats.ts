@@ -50,6 +50,7 @@ router.get("/user", authenticate, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     const stats = await getUserStats(userId);
+        console.log('DEBUG getUserStats - userId:', userId, 'stats:', stats);
     
     res.json(stats);
   } catch (error) {
