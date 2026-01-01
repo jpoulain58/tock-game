@@ -1,7 +1,10 @@
 import { Resend } from 'resend';
 import mjml2html from 'mjml';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialiser Resend uniquement si la clé API est disponible
+const resend = process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export async function sendVerificationEmail(email: string, username: string, token: string) {
   const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
@@ -59,6 +62,12 @@ export async function sendVerificationEmail(email: string, username: string, tok
   `;
 
   const { html } = mjml2html(mjmlTemplate);
+
+  if (!resend) {
+    console.warn('⚠️  RESEND_API_KEY non configurée - Email non envoyé (mode développement)');
+    console.log(`📧 Email de vérification pour ${email}: ${verificationUrl}`);
+    return;
+  }
 
   try {
     await resend.emails.send({
@@ -131,6 +140,12 @@ export async function sendPasswordResetEmail(email: string, username: string, to
   `;
 
   const { html } = mjml2html(mjmlTemplate);
+
+  if (!resend) {
+    console.warn('⚠️  RESEND_API_KEY non configurée - Email non envoyé (mode développement)');
+    console.log(`📧 Email de réinitialisation pour ${email}: ${resetUrl}`);
+    return;
+  }
 
   try {
     await resend.emails.send({

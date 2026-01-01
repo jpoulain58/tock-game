@@ -1,7 +1,5 @@
-import { PawnLocation } from "@/store/gameStore";
-
-const RING_SIZE = 72;
-const HOME_ENTRIES = [71, 18, 54, 36];
+import { PawnLocation } from "@/hooks/gameStore";
+import { RING_SIZE, HOME_ENTRIES } from "@/constants";
 
 export function calculateAnimationPath(
   from: PawnLocation,

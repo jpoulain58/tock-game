@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useThemeStore } from "@/hooks/themeStore";
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggleTheme, _hasHydrated } = useThemeStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
+  if (!mounted || !_hasHydrated) {
     return <div className="w-14 h-8"></div>;
   }
 
@@ -20,6 +20,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className="relative inline-flex items-center h-8 w-14 rounded-full bg-gray-300 dark:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
       aria-label="Toggle theme"
+      title={`Mode actuel: ${theme === 'dark' ? 'Sombre' : 'Clair'} - Cliquez pour changer`}
     >
       <span
         className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform flex items-center justify-center text-sm ${

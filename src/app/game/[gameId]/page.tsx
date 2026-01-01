@@ -8,6 +8,7 @@ import Hand from "../../../components/Hand";
 import { useGameStore } from "@/hooks/gameStore";
 import type { Card, Pawn, PawnLocation } from "@/types";
 import { calculateAnimationPath, calculateStepInterval } from "@/lib/animationHelper";
+import { RING_SIZE, HOME_ENTRIES } from "@/constants";
 
 export default function GamePage() {
   const params = useParams();
@@ -484,8 +485,6 @@ export default function GamePage() {
     
     const positions: Array<{type: 'RING' | 'HOME', idx: number}> = [];
 
-    const HOME_ENTRIES = [71, 18, 54, 36]; 
-    const RING_SIZE = 72;
 
     const stepsMap: Record<string, number> = {
       '2': 2, '3': 3, '6': 6, '8': 8, '9': 9, '10': 10, 'Q': 12, 'K': 13, 'A': 1, '5': 5

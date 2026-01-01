@@ -25,9 +25,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('tock-theme-storage');
+                  const theme = stored ? JSON.parse(stored).state.theme : 'light';
+                  document.documentElement.classList.add(theme);
+                  // Force style attribute for immediate visual feedback
+                  if (theme === 'dark') {
+                    document.documentElement.style.colorScheme = 'dark';
+                  } else {
+                    document.documentElement.style.colorScheme = 'light';
+                  }
+                } catch (e) {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.style.colorScheme = 'light';
+                }
+              })();
+            `,
+          }}
+        />
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            html, body {
+              margin: 0;
+              padding: 0;
+            }
+            html.light, html.light body {
+              background-color: #ffffff !important;
+              color: #171717 !important;
+            }
+            html.dark, html.dark body {
+              background-color: #0a0a0a !important;
+              color: #ededed !important;
+            }
+          `
+        }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased transition-colors`}
       >
         <ThemeProvider>
           <Navbar />

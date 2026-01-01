@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/authStore";
+import { useThemeStore } from "@/hooks/themeStore";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
+  const { theme } = useThemeStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -15,7 +17,11 @@ export default function Home() {
   const authenticated = mounted && isAuthenticated();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className={`min-h-screen bg-gradient-to-br ${
+      theme === 'dark' 
+        ? 'from-gray-900 via-gray-800 to-gray-900' 
+        : 'from-blue-50 via-white to-indigo-50'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4">

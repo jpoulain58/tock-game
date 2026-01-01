@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useThemeStore } from "@/hooks/themeStore";
 
 export default function NewLobby() {
   const router = useRouter();
+  const { theme } = useThemeStore();
   const [playerName, setPlayerName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
@@ -24,7 +26,9 @@ export default function NewLobby() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className={`min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br ${
+      theme === 'dark' ? 'from-gray-900 to-gray-800' : 'from-blue-50 to-indigo-100'
+    }`}>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
           Créer une nouvelle partie
