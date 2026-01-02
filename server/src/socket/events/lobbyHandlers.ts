@@ -162,11 +162,11 @@ function handleChangeTeam(
     return;
   }
   
-  const teamCount = session.players.filter(
+  const currentTeamCount = session.players.filter(
     (p) => p.team === newTeam && p.id !== socket.id
   ).length;
   
-  if (teamCount >= 2) {
+  if (currentTeamCount >= 2) {
     socket.emit("error", { message: "Cette équipe est complète (2 joueurs max)" });
     return;
   }

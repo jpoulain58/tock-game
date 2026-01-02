@@ -82,6 +82,7 @@ export default function LobbyPage() {
 
     newSocket.on("error", (data: { message: string }) => {
       setError(data.message);
+      setTimeout(() => setError(""), 5000);
     });
 
     return () => {
@@ -357,9 +358,8 @@ export default function LobbyPage() {
                   onClick={() => handleChangeTeam(0)}
                   disabled={
                     !socket || 
-                    players.find(p => p.id === socket.id)?.team === 0 || 
-                    (players.find(p => p.id === socket.id)?.team !== 0 && 
-                     players.filter(p => p.team === 0).length >= 2)
+                    !socket.connected ||
+                    players.find(p => p.id === socket.id)?.team === 0
                   }
                   className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
@@ -369,9 +369,8 @@ export default function LobbyPage() {
                   onClick={() => handleChangeTeam(1)}
                   disabled={
                     !socket || 
-                    players.find(p => p.id === socket.id)?.team === 1 || 
-                    (players.find(p => p.id === socket.id)?.team !== 1 && 
-                     players.filter(p => p.team === 1).length >= 2)
+                    !socket.connected ||
+                    players.find(p => p.id === socket.id)?.team === 1
                   }
                   className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
