@@ -109,7 +109,6 @@ export default function LobbyPage() {
       playerName
     });
     
-    setIsJoined(true);
   };
 
   const handleStartGame = () => {
