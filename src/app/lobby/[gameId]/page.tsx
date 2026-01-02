@@ -33,11 +33,23 @@ export default function LobbyPage() {
     setSocket(newSocket);
 
 
+        // Auto-join if player name is stored
+    newSocket.on("connect", () => {
+      if (storedName && storedName.trim()) {
+        newSocket.emit("joinGame", {
+          gameId,
+          playerId: newSocket.id,
+          playerName: storedName
+        });
+      }
+    });
+
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
       setPlayers(data.players);
 
           const myPlayer = data.players.find(p => p.id === newSocket.id);
           if (myPlayer) {
+
                   setIsJoined(true);
                 }
 
