@@ -1,10 +1,14 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import mjml2html from 'mjml';
 
-// Initialiser Resend uniquement si la clé API est disponible
-const resend = process.env.RESEND_API_KEY 
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+// Configuration du transporteur email avec Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 export async function sendVerificationEmail(email: string, username: string, token: string) {
   const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
@@ -63,24 +67,25 @@ export async function sendVerificationEmail(email: string, username: string, tok
 
   const { html } = mjml2html(mjmlTemplate);
 
-  if (!resend) {
-    console.warn('⚠️  RESEND_API_KEY non configurée - Email non envoyé (mode développement)');
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    console.warn('⚠️ EMAIL_USER ou EMAIL_PASSWORD non configurés - Email non envoyé');
     console.log(`📧 Email de vérification pour ${email}: ${verificationUrl}`);
     return;
   }
 
   try {
-    const result = await resend.emails.send({
-      from: 'Tock Game <onboarding@resend.dev>',
+    const result = await transporter.sendMail({
+      from: `"Tock Game" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: '🎮 Vérifiez votre email - Tock Game',
       html,
     });
-    console.log(`✅ Email de vérification envoyé à ${email}:`, result);
+
+    console.log(`✅ Email de vérification envoyé à ${email}:`, result.messageId);
     return result;
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi de l'email de vérification:", error);
-    throw error; // Relancer l'erreur pour que l'appelant puisse la gérer
+    throw error;
   }
 }
 
@@ -100,7 +105,7 @@ export async function sendPasswordResetEmail(email: string, username: string, to
         <mj-section background-color="#ffffff" padding="40px 30px" border-radius="8px">
           <mj-column>
             <mj-text font-size="24px" font-weight="bold" color="#dc2626" align="center">
-              🔐🔑 Réinitialisation de mot de passe
+              🔐 Réinitialisation de mot de passe
             </mj-text>
           </mj-column>
         </mj-section>
@@ -144,23 +149,24 @@ export async function sendPasswordResetEmail(email: string, username: string, to
 
   const { html } = mjml2html(mjmlTemplate);
 
-  if (!resend) {
-    console.warn('⚠️  RESEND_API_KEY non configurée - Email non envoyé (mode développement)');
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    console.warn('⚠️ EMAIL_USER ou EMAIL_PASSWORD non configurés - Email non envoyé');
     console.log(`📧 Email de réinitialisation pour ${email}: ${resetUrl}`);
     return;
   }
 
   try {
-    const result = await resend.emails.send({
-      from: 'Tock Game <onboarding@resend.dev>',
+    const result = await transporter.sendMail({
+      from: `"Tock Game" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: '🔐 Réinitialisation de mot de passe - Tock Game',
       html,
     });
-    console.log(`✅ Email de réinitialisation envoyé à ${email}:`, result);
+
+    console.log(`✅ Email de réinitialisation envoyé à ${email}:`, result.messageId);
     return result;
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi de l'email de réinitialisation:", error);
-    throw error; // Relancer l'erreur pour que l'appelant puisse la gérer
+    throw error;
   }
 }
