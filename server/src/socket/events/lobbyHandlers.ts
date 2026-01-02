@@ -111,19 +111,25 @@ function handleJoinGame(
   }
 
   const isHost = session.players.length === 0;
+  if (isHost) {
+    session.hostId = socket.id;
+  }
+  
   const teamACount = session.players.filter((player) => player.team === 0).length;
   const teamBCount = session.players.filter((player) => player.team === 1).length;
-  const defaultTeam = isHost ? 0 : teamACount <= teamBCount ? 0 : 1;
+  const defaultTeam = teamACount <= teamBCount ? 0 : 1;
 
   const slot = assignSlot(session.players);
 
-  session.players.push({
+  const newPlayer = {
     id: socket.id,
     name: playerName,
     slot,
     team: defaultTeam,
     isReady: false,
-  });
+  };
+
+  session.players.push(newPlayer);
 
   socket.join(gameId);
   io.to(gameId).emit("playerJoined", {

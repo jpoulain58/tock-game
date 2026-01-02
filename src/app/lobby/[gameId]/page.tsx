@@ -33,22 +33,32 @@ export default function LobbyPage() {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      transports: ['websocket', 'polling'],
     });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
+      setError("");
       if (storedName && storedName.trim()) {
         newSocket.emit("joinGame", {
           gameId,
           playerId: newSocket.id,
           playerName: storedName
         });
-        setIsJoined(true);
       }
+    });
+
+    newSocket.on("connect_error", (err) => {
+      setError("Erreur de connexion au serveur. Vérifiez votre connexion internet.");
     });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
       setPlayers(data.players);
+      
+      const myPlayer = data.players.find(p => p.id === newSocket.id);
+      if (myPlayer) {
+        setIsJoined(true);
+      }
 
       if (data.hostId && data.hostId === newSocket.id) {
         setIsHost(true);
@@ -352,6 +362,9 @@ export default function LobbyPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
                 Actions
+                {socket && !socket.connected && (
+                  <span className="ml-auto text-xs text-red-500">⚠️ Déconnecté</span>
+                )}
               </h3>
               <div className="grid grid-cols-3 gap-3">
                 <button
