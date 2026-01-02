@@ -1,7 +1,7 @@
 import mjml2html from 'mjml';
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const FROM_EMAIL = 'jeremy.poulain@etu.esgi.fr';
+const FROM_EMAIL = 'jpoulain58@gmail.com';
 const FROM_NAME = 'Tock Game';
 
 export async function sendVerificationEmail(email: string, username: string, token: string) {
