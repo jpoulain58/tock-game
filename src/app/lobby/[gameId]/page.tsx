@@ -29,36 +29,22 @@ export default function LobbyPage() {
     setPlayerName(storedName);
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const newSocket = io(socketUrl, {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      transports: ['websocket', 'polling'],
-    });
+    const newSocket = io(socketUrl);
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      setError("");
       if (storedName && storedName.trim()) {
         newSocket.emit("joinGame", {
           gameId,
           playerId: newSocket.id,
           playerName: storedName
         });
+        setIsJoined(true);
       }
-    });
-
-    newSocket.on("connect_error", (err) => {
-      setError("Erreur de connexion au serveur. Vérifiez votre connexion internet.");
     });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
       setPlayers(data.players);
-      
-      const myPlayer = data.players.find(p => p.id === newSocket.id);
-      if (myPlayer) {
-        setIsJoined(true);
-      }
 
       if (data.hostId && data.hostId === newSocket.id) {
         setIsHost(true);
@@ -147,7 +133,7 @@ export default function LobbyPage() {
   };
 
   const handleChangeTeam = (newTeam: number) => {
-    if (!socket || !socket.connected) return;
+    if (!socket) return;
     socket.emit("changeTeam", { gameId, playerId: socket.id, newTeam });
   };
 
@@ -362,29 +348,18 @@ export default function LobbyPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
                 Actions
-                {socket && !socket.connected && (
-                  <span className="ml-auto text-xs text-red-500">⚠️ Déconnecté</span>
-                )}
               </h3>
               <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => handleChangeTeam(0)}
-                  disabled={
-                    !socket || 
-                    !socket.connected ||
-                    players.find(p => p.id === socket.id)?.team === 0
-                  }
+                  disabled={players.find(p => p.id === socket?.id)?.team === 0}
                   className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
                   Équipe A
                 </button>
                 <button
                   onClick={() => handleChangeTeam(1)}
-                  disabled={
-                    !socket || 
-                    !socket.connected ||
-                    players.find(p => p.id === socket.id)?.team === 1
-                  }
+                  disabled={players.find(p => p.id === socket?.id)?.team === 1}
                   className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
                   Équipe B
