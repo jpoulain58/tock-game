@@ -51,7 +51,18 @@ router.post('/register', async (req, res) => {
                 expiresAt,
             },
         });
-        await (0, email_1.sendVerificationEmail)(user.email, user.username, verificationToken);
+        try {
+            await (0, email_1.sendVerificationEmail)(user.email, user.username, verificationToken);
+        }
+        catch (emailError) {
+            console.error('Erreur lors de l\'envoi de l\'email de vérification:', emailError);
+            // L'utilisateur est créé mais l'email n'a pas pu être envoyé
+            return res.status(201).json({
+                message: 'Inscription réussie mais l\'email de vérification n\'a pas pu être envoyé. Vous pouvez demander un renvoi.',
+                userId: user.id,
+                emailError: true,
+            });
+        }
         res.status(201).json({
             message: 'Inscription réussie ! Vérifiez votre email pour activer votre compte.',
             userId: user.id,
@@ -201,7 +212,15 @@ router.post('/resend-verification', async (req, res) => {
                 expiresAt,
             },
         });
-        await (0, email_1.sendVerificationEmail)(user.email, user.username, verificationToken);
+        try {
+            await (0, email_1.sendVerificationEmail)(user.email, user.username, verificationToken);
+        }
+        catch (emailError) {
+            console.error('Erreur lors du renvoi de l\'email de vérification:', emailError);
+            return res.status(500).json({
+                error: 'Impossible d\'envoyer l\'email de vérification. Veuillez réessayer plus tard.'
+            });
+        }
         res.json({ message: 'Email de vérification renvoyé' });
     }
     catch (error) {

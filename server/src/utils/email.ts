@@ -70,14 +70,17 @@ export async function sendVerificationEmail(email: string, username: string, tok
   }
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'Tock Game <onboarding@resend.dev>',
       to: email,
       subject: '🎮 Vérifiez votre email - Tock Game',
       html,
     });
+    console.log(`✅ Email de vérification envoyé à ${email}:`, result);
+    return result;
   } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email:", error);
+    console.error("❌ Erreur lors de l'envoi de l'email de vérification:", error);
+    throw error; // Relancer l'erreur pour que l'appelant puisse la gérer
   }
 }
 
@@ -148,13 +151,16 @@ export async function sendPasswordResetEmail(email: string, username: string, to
   }
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'Tock Game <onboarding@resend.dev>',
       to: email,
       subject: '🔐 Réinitialisation de mot de passe - Tock Game',
       html,
     });
+    console.log(`✅ Email de réinitialisation envoyé à ${email}:`, result);
+    return result;
   } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email:", error);
+    console.error("❌ Erreur lors de l'envoi de l'email de réinitialisation:", error);
+    throw error; // Relancer l'erreur pour que l'appelant puisse la gérer
   }
 }

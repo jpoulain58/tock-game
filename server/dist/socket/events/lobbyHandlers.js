@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerLobbyHandlers = registerLobbyHandlers;
 const utils_1 = require("../utils");
 const TockGame_1 = require("../../game/TockGame");
+const gameService_1 = require("../../services/gameService");
 function registerLobbyHandlers(io, socket, games) {
     socket.on("createGame", (payload) => handleCreateGame(io, socket, games, payload));
     socket.on("joinGame", (payload) => handleJoinGame(io, socket, games, payload));
@@ -175,6 +176,10 @@ function handleStartGame(io, socket, games, payload) {
     });
     session.status = "started";
     session.game.state.status = "started";
+    // Sauvegarder la partie en base de données
+    (0, gameService_1.createGameInDB)(gameId, socket.id, session).catch((error) => {
+        console.error("Erreur lors de la sauvegarde de la partie:", error);
+    });
     io.to(gameId).emit("gameStarted", {
         gameId,
         gameState: session.game.state,

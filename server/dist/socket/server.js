@@ -7,6 +7,7 @@ const socket_io_1 = require("socket.io");
 const http_1 = require("http");
 const express_1 = __importDefault(require("express"));
 const auth_1 = __importDefault(require("../api/auth"));
+const stats_1 = __importDefault(require("../api/stats"));
 const events_1 = require("./events");
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 });
 app.use(express_1.default.json());
 app.use("/api/auth", auth_1.default);
+app.use("/api/stats", stats_1.default);
 app.get("/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
