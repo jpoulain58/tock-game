@@ -39,12 +39,16 @@ export default function LobbyPage() {
           playerId: newSocket.id,
           playerName: storedName
         });
-        setIsJoined(true);
       }
     });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
       setPlayers(data.players);
+
+          const myPlayer = data.players.find(p => p.id === newSocket.id);
+          if (myPlayer) {
+                  setIsJoined(true);
+                }
 
       if (data.hostId && data.hostId === newSocket.id) {
         setIsHost(true);
