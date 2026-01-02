@@ -25,30 +25,29 @@ export default function LobbyPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    
     const storedName = localStorage.getItem("playerName") || "";
     setPlayerName(storedName);
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
-    const newSocket = io(socketUrl);
+    const newSocket = io(socketUrl, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-
       if (storedName && storedName.trim()) {
         newSocket.emit("joinGame", {
           gameId,
           playerId: newSocket.id,
           playerName: storedName
         });
-
         setIsJoined(true);
-      } else {
       }
     });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
-      
       setPlayers(data.players);
 
       if (data.hostId && data.hostId === newSocket.id) {
@@ -137,7 +136,7 @@ export default function LobbyPage() {
   };
 
   const handleChangeTeam = (newTeam: number) => {
-    if (!socket) return;
+    if (!socket || !socket.connected) return;
     socket.emit("changeTeam", { gameId, playerId: socket.id, newTeam });
   };
 
@@ -356,16 +355,24 @@ export default function LobbyPage() {
               <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => handleChangeTeam(0)}
-                  disabled={players.find(p => p.id === socket?.id)?.team === 0 || 
-                           players.filter(p => p.team === 0).length >= 2}
+                  disabled={
+                    !socket || 
+                    players.find(p => p.id === socket.id)?.team === 0 || 
+                    (players.find(p => p.id === socket.id)?.team !== 0 && 
+                     players.filter(p => p.team === 0).length >= 2)
+                  }
                   className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
                   Équipe A
                 </button>
                 <button
                   onClick={() => handleChangeTeam(1)}
-                  disabled={players.find(p => p.id === socket?.id)?.team === 1 || 
-                           players.filter(p => p.team === 1).length >= 2}
+                  disabled={
+                    !socket || 
+                    players.find(p => p.id === socket.id)?.team === 1 || 
+                    (players.find(p => p.id === socket.id)?.team !== 1 && 
+                     players.filter(p => p.team === 1).length >= 2)
+                  }
                   className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition hover-lift disabled:cursor-not-allowed text-sm"
                 >
                   Équipe B

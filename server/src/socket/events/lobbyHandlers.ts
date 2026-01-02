@@ -141,22 +141,31 @@ function handleChangeTeam(
 ) {
   const { gameId, newTeam } = payload;
   const session = games.get(gameId);
+  
   if (!session) {
     socket.emit("error", { message: "Partie introuvable" });
     return;
   }
+  
   if (session.status !== "waiting") {
     socket.emit("error", { message: "Impossible de changer d'équipe pendant la partie" });
     return;
   }
+  
   const player = session.players.find((candidate) => candidate.id === socket.id);
   if (!player) {
     socket.emit("error", { message: "Vous n'êtes pas dans cette partie" });
     return;
   }
+  
+  if (player.team === newTeam) {
+    return;
+  }
+  
   const teamCount = session.players.filter(
     (p) => p.team === newTeam && p.id !== socket.id
   ).length;
+  
   if (teamCount >= 2) {
     socket.emit("error", { message: "Cette équipe est complète (2 joueurs max)" });
     return;
