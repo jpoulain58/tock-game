@@ -39,8 +39,8 @@ export default function JoinLobby() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold gradient-text mb-2">
-            Rejoindre une partie
-          </h1>
+          Rejoindre une partie
+        </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Entrez l'ID de partie partagé par votre ami
           </p>
@@ -104,10 +104,10 @@ export default function JoinLobby() {
             <div className="ml-3">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
                 Comment ça marche ?
-              </h3>
+          </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                 Demandez l'ID de partie à l'hôte et collez-le ici. Vous rejoindrez automatiquement la salle d'attente.
-              </p>
+          </p>
             </div>
           </div>
         </div>

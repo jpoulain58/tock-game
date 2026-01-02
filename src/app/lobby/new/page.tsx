@@ -36,7 +36,7 @@ export default function NewLobby() {
           </div>
           <h1 className="text-3xl font-bold gradient-text mb-2">
             Nouvelle partie
-          </h1>
+        </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Créez votre partie et invitez vos amis
           </p>
@@ -85,10 +85,10 @@ export default function NewLobby() {
             <div className="ml-3">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
                 Comment ça marche ?
-              </h3>
+          </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                 Une fois la partie créée, partagez l'ID avec 3 amis. Il faut 4 joueurs pour démarrer.
-              </p>
+          </p>
             </div>
           </div>
         </div>

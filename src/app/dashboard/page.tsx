@@ -126,12 +126,12 @@ export default function Dashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 dark:text-gray-400">Taux de victoire</span>
                     <span className="text-3xl font-bold gradient-text">{stats.winRate}%</span>
-                  </div>
-                </div>
+              </div>
+            </div>
                 {stats.totalGames === 0 && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-6 text-center">
                     Commencez à jouer pour voir vos statistiques
-                  </p>
+            </p>
                 )}
               </>
             )}
@@ -222,7 +222,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
-            </div>
+          </div>
           )}
         </div>
       </div>

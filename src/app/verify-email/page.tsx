@@ -84,8 +84,8 @@ function VerifyEmailContent() {
             <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-4">Erreur de vérification</h1>
             <p className="text-gray-700 dark:text-gray-300 mb-6">{message}</p>
             <div className="flex gap-3">
-              <Link
-                href="/register"
+            <Link
+              href="/register"
                 className="flex-1 group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-4 px-6 rounded-xl hover-lift overflow-hidden"
               >
                 <span className="relative z-10">Nouvelle inscription</span>
@@ -96,7 +96,7 @@ function VerifyEmailContent() {
                 className="flex-1 glass border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold py-4 px-6 rounded-xl hover-lift"
               >
                 Accueil
-              </Link>
+            </Link>
             </div>
           </>
         )}

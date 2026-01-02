@@ -147,7 +147,7 @@ export default function LobbyPage() {
   };
 
   const [showCopiedToast, setShowCopiedToast] = useState(false);
-  
+
   const copyGameId = () => {
     navigator.clipboard.writeText(gameId);
     setShowCopiedToast(true);
@@ -165,7 +165,7 @@ export default function LobbyPage() {
           </div>
           <h1 className="text-3xl font-bold gradient-text mb-2">
             Salle d'attente
-          </h1>
+        </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">Préparez-vous pour la bataille</p>
         </div>
 
@@ -242,7 +242,7 @@ export default function LobbyPage() {
                       </svg>
                     </div>
                     <h2 className="text-xl font-bold text-indigo-700 dark:text-indigo-300">
-                      Équipe A
+                  Équipe A
                     </h2>
                   </div>
                   <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-semibold rounded-full">
@@ -298,7 +298,7 @@ export default function LobbyPage() {
                       </svg>
                     </div>
                     <h2 className="text-xl font-bold text-pink-700 dark:text-pink-300">
-                      Équipe B
+                  Équipe B
                     </h2>
                   </div>
                   <span className="px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-sm font-semibold rounded-full">
@@ -415,7 +415,7 @@ export default function LobbyPage() {
                   </svg>
                   <p className="text-sm font-medium">
                     En attente de {4 - players.length} joueur{4 - players.length > 1 ? 's' : ''}
-                  </p>
+                </p>
                 </div>
               </div>
             )}
@@ -428,7 +428,7 @@ export default function LobbyPage() {
                   </svg>
                   <p className="text-sm font-medium">
                     En attente que tous les joueurs soient prêts
-                  </p>
+                </p>
                 </div>
               </div>
             )}
@@ -442,7 +442,7 @@ export default function LobbyPage() {
                   </svg>
                   <p className="text-sm font-medium">
                     Il faut 2 joueurs par équipe
-                  </p>
+                </p>
                 </div>
               </div>
             )}
@@ -456,7 +456,7 @@ export default function LobbyPage() {
                   </svg>
                   <p className="text-sm font-medium">
                     Prêt à démarrer ! En attente de l'hôte...
-                  </p>
+                </p>
                 </div>
               </div>
             )}

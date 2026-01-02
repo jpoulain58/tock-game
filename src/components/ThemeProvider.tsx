@@ -8,9 +8,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     if (_hasHydrated) {
-      const root = document.documentElement;
-      root.classList.remove('light', 'dark');
-      root.classList.add(theme);
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
       
       if (theme === 'dark') {
         document.body.style.setProperty('background-color', '#0a0a0a', 'important');
