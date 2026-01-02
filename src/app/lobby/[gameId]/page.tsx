@@ -32,15 +32,6 @@ export default function LobbyPage() {
     const newSocket = io(socketUrl);
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      if (storedName && storedName.trim()) {
-        newSocket.emit("joinGame", {
-          gameId,
-          playerId: newSocket.id,
-          playerName: storedName
-        });
-      }
-    });
 
     newSocket.on("playerJoined", (data: { gameId: string; players: Player[]; hostId?: string }) => {
       setPlayers(data.players);
