@@ -475,7 +475,11 @@ class TockGame {
             const pawn = this.state.pawns.find(p => p.id === action.pawnId);
             if (!pawn)
                 return { success: false, error: "Pion invalide" };
-            return this.handleNormalMove(pawn, 5, playerSlot, events, consumeCard);
+            // Le 5 peut bouger n'importe quel pion du plateau
+            if (pawn.location.type === "BASE" || pawn.location.type === "FINISHED") {
+                return { success: false, error: "Ce pion ne peut pas être bougé" };
+            }
+            return this.handleNormalMove(pawn, 5, pawn.player, events, consumeCard);
         }
         const stepsMap = {
             '2': 2, '3': 3, '6': 6, '8': 8, '9': 9, '10': 10, 'Q': 12

@@ -21,7 +21,7 @@ async function seedTestUsers() {
       create: {
         email: user.email,
         username: user.username,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         firstName: user.firstName,
         lastName: user.lastName,
         isVerified: true,

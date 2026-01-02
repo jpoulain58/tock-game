@@ -86,7 +86,6 @@ export default function GamePage() {
       mySlot?: number;
       myPlayerName?: string;
     }) => {
-("🎮 ========== GAME STATE REÇU ==========");
 ("📦 Data complète:", data);
 ("🎯 Mon slot reçu:", data.mySlot);
 ("👤 Mon nom:", data.myPlayerName);
@@ -98,31 +97,24 @@ export default function GamePage() {
       setSessionPlayers(data.players || []);
 
       if (data.mySlot !== undefined && data.mySlot !== null) {
-(`✅ ✅ ✅ ASSIGNATION DU SLOT: ${data.mySlot}`);
         setMyPlayerSlot(data.mySlot);
         setLocalPlayerSlot(data.mySlot);
-(`💾 Slot enregistré dans le store ET le state local: ${data.mySlot}`);
 
         setTimeout(() => {
-("🔍 Vérification après 100ms:");
 ("   - Store myPlayerSlot:", myPlayerSlot);
 ("   - Local slot:", localPlayerSlot);
         }, 100);
       } else {
         
-("⚠️ Pas de mySlot dans la réponse, fallback sur socket.id");
         const myPlayer = data.players.find(p => p.id === activeSocket.id);
       if (myPlayer) {
-(`⚠️ Slot trouvé via fallback: ${myPlayer.slot}`);
         setMyPlayerSlot(myPlayer.slot);
           setLocalPlayerSlot(myPlayer.slot);
         } else {
-("❌ ERREUR: Impossible de trouver mon joueur !");
 ("   - Socket ID cherché:", activeSocket.id);
 ("   - IDs disponibles:", data.players.map(p => p.id));
         }
       }
-("🎮 =====================================");
     };
 
     const handleGameStarted = (data: { gameId: string; gameState: any }) => {
@@ -155,7 +147,6 @@ export default function GamePage() {
       newStateSummary: any;
       playerName?: string;
     }) => {
-("✅ ========== MOVE APPLIED REÇU ==========");
 ("📤 Carte jouée:", data.cardPlayed);
 ("👤 Joueur (slot):", data.playerSlot);
 ("🔄 Tour suivant (nouveau currentPlayer):", data.newStateSummary.currentPlayer);
@@ -245,8 +236,6 @@ export default function GamePage() {
         setSelectedPawn(null);
         setSwapFirstPawn(null);
       }
-      
-("✅ ========================================");
     };
 
     const animatePawnMove = (
@@ -259,8 +248,6 @@ export default function GamePage() {
     ) => {
       const path = calculateAnimationPath(from, to, steps, playerSlot);
       const interval = calculateStepInterval(path.length);
-      
-(`🎬 Animation pion ${pawnId}: ${path.length} étapes`);
       
       let currentStep = 0;
       
@@ -294,7 +281,6 @@ export default function GamePage() {
     };
 
     const handleInvalidMove = (data: { clientRequestId: string; reason: string }) => {
-("Mouvement invalide", data);
       alert(`Mouvement invalide : ${data.reason}`);
     };
 
@@ -312,8 +298,6 @@ export default function GamePage() {
     };
 
     const handleTurnPassed = (data: { playerSlot: number; playerName: string; cardDiscarded?: any; events: any[]; newStateSummary: any }) => {
-("⏭️ ========== TURN PASSED REÇU ==========");
-("👤 Joueur qui a passé:", data.playerName, "(slot", data.playerSlot + ")");
 ("🎴 Carte défaussée:", data.cardDiscarded);
 ("🔄 Nouveau currentPlayer:", data.newStateSummary.currentPlayer);
 ("📍 Nouveaux pions:", data.newStateSummary.pawns);
@@ -321,7 +305,6 @@ export default function GamePage() {
 
       setGameState(prevState => {
         if (!prevState) {
-("❌ Pas de gameState pour mettre à jour !");
           return prevState;
         }
 
@@ -332,7 +315,6 @@ export default function GamePage() {
         };
 ("💾 Ancien currentPlayer:", prevState.currentPlayer);
 ("💾 Nouveau currentPlayer:", newState.currentPlayer);
-("🔄 Mise à jour du gameState après turnPassed");
         return newState;
       });
 
@@ -351,7 +333,6 @@ export default function GamePage() {
         playerName: data.playerName,
         cardDiscarded: data.cardDiscarded
       });
-("✅ ========================================");
     };
 
     activeSocket.on("gameState", handleGameState);
@@ -365,10 +346,8 @@ export default function GamePage() {
     activeSocket.on("turnPassed", handleTurnPassed);
     activeSocket.on("error", handleError);
 
-("🔄 useEffect de la page de jeu - Event listeners attachés");
 
     return () => {
-("🧹 Cleanup de la page de jeu");
       
       activeSocket.off("gameState", handleGameState);
       activeSocket.off("gameStarted", handleGameStarted);
@@ -382,10 +361,8 @@ export default function GamePage() {
       activeSocket.off("error", handleError);
 
       if (isNewSocket && activeSocket) {
-("🔌 Fermeture de la socket créée par la page de jeu");
         activeSocket.close();
       } else {
-("♻️ Socket du lobby conservée");
       }
     };
   }, []); 
@@ -435,7 +412,6 @@ export default function GamePage() {
     if (card.rank === "A" || card.rank === "K") {
       const shouldExit = confirm("Voulez-vous sortir un pion de la base ?");
       setWantsToExit(shouldExit);
-(`💭 Choix pour ${card.rank}: ${shouldExit ? "Sortie" : "Mouvement"}`);
     } else {
       setWantsToExit(null);
     }
@@ -509,7 +485,8 @@ export default function GamePage() {
     if (pawn.location.type === "RING") {
       const steps = stepsMap[card.rank];
       if (steps) {
-        const homeEntry = HOME_ENTRIES[currentSlot];
+        // Pour le 5, on utilise l'entrée HOME du pion, pas du joueur actuel
+        const homeEntry = card.rank === "5" ? HOME_ENTRIES[pawn.player] : HOME_ENTRIES[currentSlot];
         let foundHome = false;
 
         for (let i = 1; i <= steps; i++) {
@@ -575,8 +552,6 @@ export default function GamePage() {
   };
 
   const handlePawnClick = (pawn: Pawn) => {
-("🎯 Clic sur pion:", pawn.id);
-    
     if (!selectedCard) {
       alert("Sélectionnez d'abord une carte !");
       return;
@@ -635,8 +610,15 @@ export default function GamePage() {
       return;
     }
 
-    if (pawn.player !== currentSlot) {
+    // Le 5 peut bouger n'importe quel pion
+    if (selectedCard.rank !== "5" && pawn.player !== currentSlot) {
       alert("Ce n'est pas votre pion !");
+      return;
+    }
+    
+    // Pour le 5, on vérifie que le pion est sur le plateau
+    if (selectedCard.rank === "5" && (pawn.location.type === "BASE" || pawn.location.type === "FINISHED")) {
+      alert("Ce pion ne peut pas être bougé !");
       return;
     }
 
