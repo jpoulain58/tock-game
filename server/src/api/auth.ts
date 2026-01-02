@@ -292,6 +292,7 @@ router.post('/forgot-password', async (req, res) => {
     try {
       await sendPasswordResetEmail(user.email, user.username, resetToken);
     } catch (emailError) {
+            console.error('Erreur lors de l\'envoi de l\'email de réinitialisation:', emailError);
       return res
         .status(500)
         .json({ error: "Impossible d'envoyer l'email de réinitialisation" });
