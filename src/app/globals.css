@@ -42,14 +42,16 @@ html.light body {
 
 /* Glassmorphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .dark .glass {
   background: rgba(30, 41, 59, 0.7);
   border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Gradient text */
@@ -75,7 +77,7 @@ html.light body {
 }
 
 .animated-gradient {
-  background: linear-gradient(270deg, #667eea, #764ba2, #f093fb);
+  background: linear-gradient(270deg, #e0e7ff, #ddd6fe, #fce7f3);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
 }

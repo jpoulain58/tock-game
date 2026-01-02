@@ -735,10 +735,10 @@ export default function GamePage() {
   const isMyTurn = gameState.currentPlayer === effectiveSlot;
 
   const playerColors = [
-    { color: '#2563eb', name: 'Bleu', bg: 'bg-blue-600', text: 'text-blue-600' },
-    { color: '#dc2626', name: 'Rouge', bg: 'bg-red-600', text: 'text-red-600' },
-    { color: '#16a34a', name: 'Vert', bg: 'bg-green-600', text: 'text-green-600' },
-    { color: '#fb923c', name: 'Orange', bg: 'bg-orange-500', text: 'text-orange-500' }
+    { color: '#1d4ed8', name: 'Bleu', bg: 'bg-blue-700', text: 'text-blue-700 dark:text-blue-400' },
+    { color: '#b91c1c', name: 'Rouge', bg: 'bg-red-700', text: 'text-red-700 dark:text-red-400' },
+    { color: '#15803d', name: 'Vert', bg: 'bg-green-700', text: 'text-green-700 dark:text-green-400' },
+    { color: '#ea580c', name: 'Orange', bg: 'bg-orange-600', text: 'text-orange-600 dark:text-orange-400' }
   ];
 
   const myColor = effectiveSlot !== null ? playerColors[effectiveSlot] : null;
@@ -799,8 +799,8 @@ export default function GamePage() {
               {isMyTurn ? (
                 <div className="mt-4 space-y-2">
                   {}
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                    <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                  <div className="bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-800 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">
                       📋 Comment jouer :
                     </p>
                     <ol className="text-xs text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
@@ -851,8 +851,8 @@ export default function GamePage() {
                     key={index}
                     className={`p-3 rounded-lg ${
                       index === gameState.currentPlayer
-                        ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
-                        : "bg-gray-100 dark:bg-gray-700"
+                        ? "bg-green-200 dark:bg-green-900/30 border-2 border-green-600 dark:border-green-500 shadow-md"
+                        : "bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
                     }`}
                   >
                     <div className="flex justify-between items-center">

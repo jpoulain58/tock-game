@@ -17,10 +17,10 @@ export default function Hand({ hand, onSelect, selectedCard }: Props) {
         return (
           <div key={card.id} className="relative group">
             <button
-              className={`border rounded px-3 py-2 shadow font-mono text-lg transition-all cursor-pointer ${
+              className={`border-2 rounded-lg px-3 py-2 shadow-md font-mono text-lg transition-all cursor-pointer ${
                 isSelected 
-                  ? 'bg-yellow-400 dark:bg-yellow-600 border-yellow-600 scale-110 font-bold' 
-                  : 'bg-white dark:bg-gray-700 border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                  ? 'bg-yellow-300 dark:bg-yellow-600 border-yellow-600 dark:border-yellow-500 scale-110 font-bold text-gray-900 dark:text-white ring-4 ring-yellow-200 dark:ring-yellow-900' 
+                  : 'bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-lg'
               }`}
               onClick={() => onSelect?.(card)}
             >

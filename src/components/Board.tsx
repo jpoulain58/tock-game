@@ -3,6 +3,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useGameStore } from '@/hooks/gameStore';
+import { useThemeStore } from '@/hooks/themeStore';
 import { defaultBoardMapping } from './boardMapping';
 import { computeAnchors } from './tockBoard';
 
@@ -26,7 +27,21 @@ export default function Board({
 }: BoardProps) {
   const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
   const { gameState, selectedPawn, setSelectedPawn, myPlayerSlot, animatingPawns, displayedCard } = useGameStore();
+  const { theme } = useThemeStore();
   const svgRef = useRef<SVGSVGElement | null>(null);
+  
+  // Couleurs plus saturées et contrastées pour le mode clair
+  const colorByPlayer = theme === 'light' 
+    ? ['#1d4ed8', '#b91c1c', '#15803d', '#ea580c'] // Mode clair: couleurs plus foncées
+    : ['#3b82f6', '#ef4444', '#22c55e', '#fb923c']; // Mode sombre: couleurs plus claires
+    
+  const strokeByPlayer = theme === 'light'
+    ? ['#1e3a8a', '#7f1d1d', '#14532d', '#7c2d12'] // Mode clair: strokes très foncés
+    : ['#1e40af', '#991b1b', '#166534', '#9a3412']; // Mode sombre: strokes moyens
+    
+  const highlightFill = theme === 'light'
+    ? ['rgba(29,78,216,0.35)','rgba(185,28,28,0.35)','rgba(21,128,61,0.35)','rgba(234,88,12,0.35)']
+    : ['rgba(59,130,246,0.22)','rgba(239,68,68,0.22)','rgba(34,197,94,0.22)','rgba(251,146,60,0.22)'];
 
   const geometry = useMemo(() => defaultBoardMapping, []);
   const anchors = useMemo(() => computeAnchors(geometry as any), []);
@@ -166,9 +181,6 @@ export default function Board({
         >
         {}
         {(() => {
-
-          const colorByPlayer = ['#2563eb', '#dc2626', '#16a34a', '#fb923c']; 
-          const highlightFill = ['rgba(37,99,235,0.22)','rgba(220,38,38,0.22)','rgba(22,163,74,0.22)','rgba(251,146,60,0.22)'];
           const current = gameState?.currentPlayer ?? -1;
 
           const ringOccupants = new Map<number, { player: number }[]>();
@@ -209,8 +221,6 @@ export default function Board({
 
         {}
         {activeMap.homes.map((lane, player) => {
-          
-          const colorByPlayer = ['#2563eb', '#dc2626', '#16a34a', '#fb923c']; 
           const fillColor = colorByPlayer[player % 4];
           return (
             <g key={`home-${player}`}>
@@ -228,7 +238,6 @@ export default function Board({
 
         {}
         {activeMap.bases.map((cells, player) => {
-          const colorByPlayer = ['#2563eb', '#dc2626', '#16a34a', '#fb923c'];
           const stroke = colorByPlayer[player % 4];
           
           const baseCount = gameState?.pawns.filter(p => p.player === player && p.location.type === 'BASE').length ?? 0;
@@ -252,9 +261,6 @@ export default function Board({
 
         {}
         {gameState?.pawns.map((pawn) => {
-          const colorByPlayer = ['#2563eb', '#dc2626', '#16a34a', '#fb923c'];
-          const strokeByPlayer = ['#1e3a8a', '#7f1d1d', '#14532d', '#7c2d12'];
-
           let pos: { x: number; y: number } | null = null;
           let isInBase = false;
           
