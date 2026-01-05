@@ -128,7 +128,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold gradient-text mb-8 text-center">
             Comment jouer ?
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
             <div className="space-y-2">
               <h4 className="font-semibold text-lg text-gray-900 dark:text-white">Objectif du jeu</h4>
               <p className="text-gray-600 dark:text-gray-400">
@@ -153,6 +153,18 @@ export default function Home() {
                 Bloquez vos adversaires, protégez votre partenaire. Chaque décision compte.
               </p>
             </div>
+          </div>
+          
+          <div className="text-center">
+            <Link
+              href="/rules"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg hover-lift"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span>Voir toutes les règles détaillées</span>
+            </Link>
           </div>
         </div>
 
