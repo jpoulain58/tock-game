@@ -205,9 +205,10 @@ export class TockGame {
     return { teleported: true };
   }
 
-  capturePawnAt(idx: number, excludePawnId?: string): string | undefined {
+  capturePawnAt(idx: number, excludePawnId?: string, captureTeammates: boolean = false): string | undefined {
     const pawn = this.getPawnAtRing(idx);
     if (pawn && pawn.id !== excludePawnId) {
+      // Si captureTeammates est true (pour le 7), on capture même les coéquipiers
       pawn.location = { type: "BASE" };
       return pawn.id;
     }
@@ -748,23 +749,62 @@ export class TockGame {
       const startIdx = pawn.location.idx;
       const capturedPawns: string[] = [];
 
+      // ⚠️ LE 7 CAPTURE TOUS LES PIONS SUR SON PASSAGE (même les coéquipiers)
       for (let i = 1; i <= steps; i++) {
         const idx = (startIdx + i) % RING_SIZE;
-        const capturedId = this.capturePawnAt(idx);
-        if (capturedId) {
-          capturedPawns.push(capturedId);
-          events.push({ type: "sevenCapture", capturedPawnId: capturedId, atStep: i });
+        const victimPawn = this.getPawnAtRing(idx);
+        if (victimPawn && victimPawn.id !== pawn.id) {
+          // Capturer TOUS les pions sans exception
+          victimPawn.location = { type: "BASE" };
+          capturedPawns.push(victimPawn.id);
+          events.push({ 
+            type: "sevenCapture", 
+            capturedPawnId: victimPawn.id, 
+            atStep: i 
+          });
         }
       }
 
-      const moveResult = this.stepForward(pawn, steps, playerSlot);
-      if (!moveResult.success) {
-        return { success: false, error: moveResult.error };
+      // Calculer la position finale SANS vérifier les blocages
+      const finalIdx = (startIdx + steps) % RING_SIZE;
+      const homeEntry = HOME_ENTRIES[playerSlot];
+      
+      // Vérifier si on passe par la maison
+      let enteredHome = false;
+      for (let i = 1; i <= steps; i++) {
+        const idx = (startIdx + i) % RING_SIZE;
+        if (idx === homeEntry) {
+          enteredHome = true;
+          const stepsAfterHome = steps - i;
+          
+          if (stepsAfterHome === 0) {
+            // On s'arrête pile sur l'entrée
+            pawn.location = { type: "RING", idx: homeEntry };
+          } else {
+            // On entre dans HOME
+            const homeIdx = stepsAfterHome - 1;
+            if (homeIdx > 3) {
+              return { success: false, error: "Dépassement de HOME" };
+            }
+            if (homeIdx === 3) {
+              pawn.location = { type: "FINISHED" };
+            } else {
+              if (this.getPawnAtHome(playerSlot, homeIdx)) {
+                return { success: false, error: "Case HOME occupée" };
+              }
+              pawn.location = { type: "HOME", idx: homeIdx };
+            }
+          }
+          break;
+        }
       }
 
-      const oldLocation = pawn.location;
-      pawn.location = moveResult.finalLocation!;
+      if (!enteredHome) {
+        pawn.location = { type: "RING", idx: finalIdx };
+      }
 
+      const oldLocation = { type: "RING" as const, idx: startIdx };
+      
       events.push({
         type: "sevenMove",
         pawnId: pawn.id,
