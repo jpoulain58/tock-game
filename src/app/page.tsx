@@ -54,12 +54,12 @@ export default function Home() {
           <div className="glass rounded-2xl p-8 hover-lift hover-glow group">
             <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Animations Fluides</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Chat en Direct</h3>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Déplacements animés case par case pour une expérience immersive.
+              Communiquez avec votre équipe et vos adversaires pendant les parties.
             </p>
           </div>
 
